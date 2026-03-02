@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Points & Rewards System{% endblock %}
+
+{% block content %}
+<main style="max-width:1200px; margin:40px auto; padding:0 20px">
+  <div class="card">
+    <h2>🏆 Points & Rewards System</h2>
+    <p class="small muted">Gagnez des points, débloquez des achievements et convertissez-les en récompenses</p>
+    
+    <div class="nav-tabs" style="margin-top:20px;">
+      <button class="btn-tab active" onclick="switchTab(event, 'points')">⭐ Mes Points</button>
+      <button class="btn-tab" onclick="switchTab(event, 'redeem')">🎁 Convertir</button>
+      <button class="btn-tab" onclick="switchTab(event, 'leaderboard')">🏅 Classement</button>
+      <button class="btn-tab" onclick="switchTab(event, 'achievements')">🎯 Achievements</button>
+    </div>
+
+    <!-- TAB 1: POINTS -->
+    <div id="points" class="tab-pane active">
+      <h3>⭐ Mes Points</h3>
+      <button type="button" onclick="loadUserPoints()" class="btn btn-secondary">
+        Charger Mes Points
+      </button>
+      <div id="userPointsResult" style="margin-top:15px;"></div>
+    </div>
+
+    <!-- TAB 2: REDEEM -->
+    <div id="redeem" class="tab-pane">
+      <h3>🎁 Convertir les Points</h3>
+      <div>
+        <label>Type de récompense:</label>
+        <select id="rewardType">
+          <option value="coupon">Coupon Discount</option>
+          <option value="discount">Réduction Produit</option>
+          <option value="course_access">Accès Cours Premium</option>
+          <option value="cash">Remboursement</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">
+        <label>Points à convertir:</label>
+        <input type="number" id="pointsToRedeem" placeholder="500" min="100">
+      </div>
+      <div style="margin-top:10px;">
+        <label>Description:</label>
+        <textarea id="redeemDescription" placeholder="Pourquoi convertir ces points?" style="width:100%; height:60px;"></textarea>
+      </div>
+      <button type="button" onclick="redeemPoints()" class="btn btn-primary" style="margin-top:15px;">
+        Convertir
+      </button>
+      <div id="redeemResult" style="margin-top:20px; display:none;"></div>
+    </div>
+
+    <!-- TAB 3: LEADERBOARD -->
+    <div id="leaderboard" class="tab-pane">
+      <h3>🏅 Classement Global</h3>
+      <div style="margin-bottom:15px;">
+        <label>Période:</label>
+        <select id="leaderboardPeriod">
+          <option value="all">Tous les temps</option>
+          <option value="monthly">Ce mois</option>
+          <option value="weekly">Cette semaine</option>
+        </select>
+      </div>
+      <button type="button" onclick="loadLeaderboard()" class="btn btn-secondary">
+        Charger Classement
+      </button>
+      <div id="leaderboardResult" style="margin-top:15px;"></div>
+    </div>
+
+    <!-- TAB 4: ACHIEVEMENTS -->
+    <div id="achievements" class="tab-pane">
+      <h3>🎯 Mes Achievements</h3>
+      <button type="button" onclick="loadAchievements()" class="btn btn-secondary">
+        Charger Achievements
+      </button>
+      <div id="achievementsResult" style="margin-top:15px;"></div>
+    </div>
+
+  </div>
+</main>
+
+<style>
+  .nav-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    flex-wrap: wrap;
+  }
+  .btn-tab {
+    background: none;
+    border: none;
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    font-weight: 500;
+    color: #666;
+  }
+  .btn-tab.active {
+    border-bottom-color: #007bff;
+    color: #007bff;
+  }
+  .tab-pane {
+    display: none;
+    padding: 20px 0;
+  }
+  .tab-pane.active {
+    display: block;
+  }
+  input, textarea, select {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+  }
+  .points-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  .points-card h4 {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  .points-card .big-number {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  .tier-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.3);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 10px;
+  }
+  #redeemResult, #userPointsResult, #leaderboardResult, #achievementsResult {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 4px solid #667eea;
+    color: #333;
+  }
+  #redeemResult h4, #userPointsResult h4, #leaderboardResult h4, #achievementsResult h4 {
+    color: #667eea;
+    margin-top: 0;
+  }
+  #redeemResult p, #redeemResult strong,
+  #userPointsResult p, #userPointsResult strong,
+  #leaderboardResult p, #leaderboardResult strong,
+  #achievementsResult p, #achievementsResult strong {
+    color: #333;
+  }
+  #userPointsResult div, #leaderboardResult table, #achievementsResult div {
+    color: #333;
+  }
+</style>
+
+<script>
+  function switchTab(event, tabName) {
+    event.preventDefault();
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelectorAll('.btn-tab').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  async function loadUserPoints() {
+    try {
+      const response = await fetch('/modules/rewards/user-points/current');
+      const result = await response.json();
+      
+      document.getElementById('userPointsResult').innerHTML = `
+        <div class="points-card">
+          <h4>Total Points</h4>
+          <div class="big-number">${result.total_points}</div>
+          <div>${result.tier.toUpperCase()}</div>
+          <div class="tier-badge">Avantages: ${result.benefits.join(', ')}</div>
+        </div>
+        <h4>Activités Récentes</h4>
+        ${result.recent_actions.map(a => `
+          <div style="padding:8px; border-bottom:1px solid #eee;">
+            <strong>+${a.points}</strong> ${a.action} - ${new Date(a.timestamp).toLocaleDateString()}
+          </div>
+        `).join('')}
+      `;
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function redeemPoints() {
+    const data = {
+      reward_type: document.getElementById('rewardType').value,
+      points_to_redeem: parseInt(document.getElementById('pointsToRedeem').value),
+      description: document.getElementById('redeemDescription').value
+    };
+
+    try {
+      const response = await fetch('/modules/rewards/redeem-points', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('redeemResult').innerHTML = `
+          <h4>✅ Conversion Réussie!</h4>
+          <p>Points utilisés: ${result.points_used}</p>
+          <p>Points restants: ${result.remaining_points}</p>
+          <p>Code coupon: <strong>${result.reward.coupon_code}</strong></p>
+        `;
+        document.getElementById('redeemResult').style.display = 'block';
+      } else {
+        alert('Erreur: ' + result.error);
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function loadLeaderboard() {
+    const period = document.getElementById('leaderboardPeriod').value;
+    try {
+      const response = await fetch(`/modules/rewards/leaderboard?period=${period}&limit=20`);
+      const result = await response.json();
+      
+      document.getElementById('leaderboardResult').innerHTML = `
+        <table style="width:100%;">
+          <tr style="background:#f5f5f5; font-weight:bold;">
+            <td style="padding:8px;">Rang</td>
+            <td>Utilisateur</td>
+            <td style="text-align:right;">Points</td>
+            <td>Tier</td>
+          </tr>
+          ${result.leaderboard.map((entry, i) => `
+            <tr style="border-bottom:1px solid #ddd;">
+              <td style="padding:8px;">${entry.rank}</td>
+              <td>User ${entry.user_id}</td>
+              <td style="text-align:right; font-weight:bold;">${entry.points}</td>
+              <td><span style="color:#667eea;">${entry.tier}</span></td>
+            </tr>
+          `).join('')}
+        </table>
+      `;
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function loadAchievements() {
+    try {
+      const response = await fetch('/modules/rewards/achievements');
+      const result = await response.json();
+      
+      document.getElementById('achievementsResult').innerHTML = `
+        <p>Total: ${result.total_count} achievements</p>
+        ${result.achievements.map(a => `
+          <div style="background:#fff; padding:12px; margin:8px 0; border-radius:4px; border-left:4px solid #ffc107;">
+            🏆 <strong>${a.name}</strong><br>
+            <small>${a.description}</small>
+          </div>
+        `).join('') || '<p>Aucun achievement débloqué</p>'}
+      `;
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,591 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+/* Dashboard Styles */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  border: 3px solid rgba(255,255,255,0.4);
+}
+
+.user-details h2 {
+  margin: 0 0 5px 0;
+  font-size: 24px;
+}
+
+.user-details p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.status-premium {
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #333;
+}
+
+.status-free {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s;
+}
+
+.hero-btn:hover {
+  transform: translateY(-2px);
+}
+
+.hero-btn-primary {
+  background: white;
+  color: #667eea;
+}
+
+.hero-btn-secondary {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.stat-icon-blue { background: #e0e7ff; }
+.stat-icon-green { background: #dcfce7; }
+.stat-icon-orange { background: #fef3c7; }
+.stat-icon-purple { background: #f3e8ff; }
+
+.stat-info h4 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.stat-info p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Subscription Card */
+.subscription-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+}
+
+.subscription-card.active {
+  border-left: 4px solid #10b981;
+}
+
+.subscription-card.inactive {
+  border-left: 4px solid #f59e0b;
+}
+
+.subscription-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.subscription-status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.subscription-status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.subscription-status.inactive {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.subscription-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.subscription-detail {
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.subscription-detail label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #999;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.subscription-detail span {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Modules Grid */
+.modules-section {
+  margin-bottom: 25px;
+}
+
+.modules-section h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #333;
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+.module-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.module-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.module-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.module-icon-education { background: #dbeafe; }
+.module-icon-saas { background: #dcfce7; }
+.module-icon-automation { background: #fef3c7; }
+.module-icon-content { background: #fce7f3; }
+.module-icon-plugins { background: #e0e7ff; }
+
+.module-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.module-info p {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.module-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #666;
+}
+
+.module-tag.premium {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* Quick Actions */
+.quick-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.quick-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.quick-card h4 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.activity-dot.blue { background: #3b82f6; }
+.activity-dot.green { background: #10b981; }
+.activity-dot.orange { background: #f59e0b; }
+
+.activity-text {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.shortcut-btn {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: #333;
+  font-size: 13px;
+}
+
+.shortcut-btn:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.shortcut-btn span {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+/* Footer note */
+.dashboard-footer {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+  font-size: 13px;
+}
+</style>
+
+<div class="dashboard-container">
+  <!-- Hero Section -->
+  <div class="dashboard-hero">
+    <div class="user-info">
+      <div class="avatar">{{ user.username[0]|upper }}</div>
+      <div class="user-details">
+        <h2>{{ ('Welcome back, ' ~ user.username ~ '!') if is_en else ('Bon retour, ' ~ user.username ~ ' !') }}</h2>
+        <p>{{ user.email }}</p>
+        {% if user.is_premium() %}
+          <span class="status-badge status-premium">⭐ Premium</span>
+        {% else %}
+          <span class="status-badge status-free">{{ 'Free Plan' if is_en else 'Plan Gratuit' }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="hero-actions">
+      {% if not user.is_premium() %}
+        <a href="/modules/saas" class="hero-btn hero-btn-primary">🚀 {{ 'Upgrade to Premium' if is_en else 'Passer Premium' }}</a>
+      {% endif %}
+      <a href="/auth/logout" class="hero-btn hero-btn-secondary">{{ 'Sign out' if is_en else 'Déconnexion' }}</a>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-blue">📚</div>
+      <div class="stat-info">
+        <h4>{{ user.progress|length if user.progress else 0 }}</h4>
+        <p>{{ 'Modules started' if is_en else 'Modules commencés' }}</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-green">🏆</div>
+      <div class="stat-info">
+        <h4>{{ user.badges|length if user.badges else 0 }}</h4>
+        <p>{{ 'Badges earned' if is_en else 'Badges gagnés' }}</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-orange">📜</div>
+      <div class="stat-info">
+        <h4>{{ user.certificates|length if user.certificates else 0 }}</h4>
+        <p>{{ 'Certificates' if is_en else 'Certificats' }}</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-purple">⚡</div>
+      <div class="stat-info">
+        <h4>{{ user.role|capitalize }}</h4>
+        <p>{{ 'Account status' if is_en else 'Statut du compte' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription Status -->
+  {% if user.is_premium() %}
+  <div class="subscription-card active">
+    <div class="subscription-header">
+      <h3>{{ 'Your Subscription' if is_en else 'Votre Abonnement' }}</h3>
+      <span class="subscription-status active">✓ {{ 'Active' if is_en else 'Actif' }}</span>
+    </div>
+    <div class="subscription-details">
+      <div class="subscription-detail">
+        <label>{{ 'Plan' if is_en else 'Plan' }}</label>
+        <span>Premium</span>
+      </div>
+      <div class="subscription-detail">
+        <label>{{ 'Status' if is_en else 'Statut' }}</label>
+        <span>{{ 'All features unlocked' if is_en else 'Toutes fonctionnalités débloquées' }}</span>
+      </div>
+      <div class="subscription-detail">
+        <label>{{ 'Benefits' if is_en else 'Avantages' }}</label>
+        <span>{{ 'Full access' if is_en else 'Accès complet' }}</span>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="subscription-card inactive">
+    <div class="subscription-header">
+      <h3>{{ 'Upgrade Your Experience' if is_en else 'Améliorez Votre Expérience' }}</h3>
+      <span class="subscription-status inactive">{{ 'Free Plan' if is_en else 'Plan Gratuit' }}</span>
+    </div>
+    <p style="color: #666; margin-bottom: 15px;">{{ 'Unlock all premium features including advanced lessons, automation tools, and more.' if is_en else 'Débloquez toutes les fonctionnalités premium : leçons avancées, outils d\'automatisation, et plus.' }}</p>
+    <a href="/modules/saas" class="hero-btn hero-btn-primary" style="background: #667eea; color: white;">{{ 'View Plans' if is_en else 'Voir les Plans' }}</a>
+  </div>
+  {% endif %}
+
+  <!-- Modules Section -->
+  <div class="modules-section">
+    <h3>{{ 'Your Modules' if is_en else 'Vos Modules' }}</h3>
+    <div class="modules-grid">
+      <a href="/modules/education/" class="module-card">
+        <div class="module-icon module-icon-education">🎓</div>
+        <div class="module-info">
+          <h4>Education</h4>
+          <p>{{ 'Lessons, courses, and learning paths' if is_en else 'Leçons, cours et parcours d\'apprentissage' }}</p>
+          <span class="module-tag premium">Premium</span>
+        </div>
+      </a>
+      
+      <a href="/modules/saas" class="module-card">
+        <div class="module-icon module-icon-saas">☁️</div>
+        <div class="module-info">
+          <h4>SaaS Tools</h4>
+          <p>{{ 'File conversion, QR codes, CV generator' if is_en else 'Conversion de fichiers, QR codes, générateur CV' }}</p>
+          <span class="module-tag premium">Premium</span>
+        </div>
+      </a>
+      
+      <a href="/modules/automation/" class="module-card">
+        <div class="module-icon module-icon-automation">⚙️</div>
+        <div class="module-info">
+          <h4>{{ 'Automation' if is_en else 'Automatisation' }}</h4>
+          <p>{{ 'Scheduled tasks, workflows, reports' if is_en else 'Tâches planifiées, workflows, rapports' }}</p>
+          <span class="module-tag premium">Premium</span>
+        </div>
+      </a>
+      
+      <a href="/modules/content" class="module-card">
+        <div class="module-icon module-icon-content">📝</div>
+        <div class="module-info">
+          <h4>{{ 'Content' if is_en else 'Contenu' }}</h4>
+          <p>{{ 'Articles, resources, and guides' if is_en else 'Articles, ressources et guides' }}</p>
+          <span class="module-tag">{{ 'Available' if is_en else 'Disponible' }}</span>
+        </div>
+      </a>
+      
+      <a href="/modules/plugins" class="module-card">
+        <div class="module-icon module-icon-plugins">🧩</div>
+        <div class="module-info">
+          <h4>Plugins</h4>
+          <p>{{ 'Third-party extensions and integrations' if is_en else 'Extensions et intégrations tierces' }}</p>
+          <span class="module-tag">{{ 'Available' if is_en else 'Disponible' }}</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <div class="quick-section">
+    <div class="quick-card">
+      <h4>📊 {{ 'Recent Activity' if is_en else 'Activité Récente' }}</h4>
+      <ul class="activity-list">
+        <li class="activity-item">
+          <span class="activity-dot blue"></span>
+          <span class="activity-text">{{ 'Account created' if is_en else 'Compte créé' }}</span>
+          <span class="activity-time">{{ user.created_at[:10] if user.created_at else '—' }}</span>
+        </li>
+        <li class="activity-item">
+          <span class="activity-dot green"></span>
+          <span class="activity-text">{{ 'Profile updated' if is_en else 'Profil mis à jour' }}</span>
+          <span class="activity-time">{{ 'Recently' if is_en else 'Récemment' }}</span>
+        </li>
+        {% if user.is_premium() %}
+        <li class="activity-item">
+          <span class="activity-dot orange"></span>
+          <span class="activity-text">{{ 'Premium subscription activated' if is_en else 'Abonnement premium activé' }}</span>
+          <span class="activity-time">✓</span>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+    
+    <div class="quick-card">
+      <h4>⚡ {{ 'Quick Shortcuts' if is_en else 'Raccourcis Rapides' }}</h4>
+      <div class="shortcut-grid">
+        <a href="/modules/education/lessons" class="shortcut-btn">
+          <span>📖</span>
+          {{ 'Lessons' if is_en else 'Leçons' }}
+        </a>
+        <a href="/modules/saas" class="shortcut-btn">
+          <span>🛠️</span>
+          {{ 'Tools' if is_en else 'Outils' }}
+        </a>
+        <a href="/modules/automation/" class="shortcut-btn">
+          <span>🤖</span>
+          {{ 'Automate' if is_en else 'Automatiser' }}
+        </a>
+        <a href="/auth/logout" class="shortcut-btn">
+          <span>🚪</span>
+          {{ 'Logout' if is_en else 'Déconnexion' }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="dashboard-footer">
+    {{ 'Need help? Contact our support team anytime.' if is_en else 'Besoin d\'aide ? Contactez notre équipe support à tout moment.' }}
+  </div>
+</div>
+{% endblock %}

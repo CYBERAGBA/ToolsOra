@@ -1,0 +1,543 @@
+{% extends "base.html" %}
+{% block title %}Quiz - {{ lesson.title }} | OraHub{% endblock %}
+
+{% block content %}
+<style>
+    .quiz-hero {
+        background: {% if course == 'data-analyse' %}linear-gradient(135deg, #1a365d 0%, #2d3748 100%){% else %}linear-gradient(135deg, #9f1239 0%, #be185d 100%){% endif %};
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 40px;
+    }
+    .quiz-hero h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    .quiz-hero p {
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .quiz-container {
+        max-width: 800px;
+        margin: 0 auto 50px;
+    }
+    
+    .quiz-progress {
+        background: white;
+        border-radius: 12px;
+        padding: 20px 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .progress-bar-container {
+        flex: 1;
+        background: #e2e8f0;
+        height: 10px;
+        border-radius: 5px;
+        margin: 0 20px;
+        overflow: hidden;
+    }
+    .progress-bar-fill {
+        height: 100%;
+        background: {% if course == 'data-analyse' %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% else %}linear-gradient(135deg, #ec4899 0%, #f43f5e 100%){% endif %};
+        border-radius: 5px;
+        transition: width 0.5s ease;
+    }
+    .progress-text {
+        font-weight: 600;
+        color: #2d3748;
+        white-space: nowrap;
+    }
+    
+    .question-card {
+        background: white;
+        border-radius: 12px;
+        padding: 35px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        display: none;
+    }
+    .question-card.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .question-number {
+        color: {% if course == 'data-analyse' %}#667eea{% else %}#ec4899{% endif %};
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    .question-text {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 25px;
+        line-height: 1.5;
+    }
+    
+    .choices {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .choice {
+        display: flex;
+        align-items: center;
+        padding: 18px 20px;
+        background: #f7fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .choice:hover {
+        background: #edf2f7;
+        border-color: #cbd5e0;
+    }
+    .choice.selected {
+        background: {% if course == 'data-analyse' %}#ebf4ff{% else %}#fdf2f8{% endif %};
+        border-color: {% if course == 'data-analyse' %}#667eea{% else %}#ec4899{% endif %};
+    }
+    .choice.correct {
+        background: #c6f6d5;
+        border-color: #48bb78;
+    }
+    .choice.incorrect {
+        background: #fed7e2;
+        border-color: #f56565;
+    }
+    .choice-letter {
+        width: 35px;
+        height: 35px;
+        background: #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #4a5568;
+        margin-right: 15px;
+        transition: all 0.3s;
+    }
+    .choice.selected .choice-letter {
+        background: {% if course == 'data-analyse' %}#667eea{% else %}#ec4899{% endif %};
+        color: white;
+    }
+    .choice.correct .choice-letter {
+        background: #48bb78;
+        color: white;
+    }
+    .choice.incorrect .choice-letter {
+        background: #f56565;
+        color: white;
+    }
+    .choice-text {
+        flex: 1;
+        color: #4a5568;
+        font-size: 1.05rem;
+    }
+    .choice-icon {
+        font-size: 1.2rem;
+        display: none;
+    }
+    .choice.correct .choice-icon,
+    .choice.incorrect .choice-icon {
+        display: block;
+    }
+    .choice.correct .choice-icon {
+        color: #48bb78;
+    }
+    .choice.incorrect .choice-icon {
+        color: #f56565;
+    }
+    
+    .quiz-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+    }
+    .btn-quiz-nav {
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+    }
+    .btn-prev {
+        background: #f7fafc;
+        color: #4a5568;
+        border: 2px solid #e2e8f0;
+    }
+    .btn-prev:hover {
+        background: #edf2f7;
+    }
+    .btn-prev:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .btn-next-q {
+        background: {% if course == 'data-analyse' %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% else %}linear-gradient(135deg, #ec4899 0%, #f43f5e 100%){% endif %};
+        color: white;
+    }
+    .btn-next-q:hover {
+        opacity: 0.9;
+    }
+    .btn-next-q:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Results */
+    .results-card {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        display: none;
+    }
+    .results-card.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+    .results-icon {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 3rem;
+    }
+    .results-icon.passed {
+        background: #c6f6d5;
+        color: #276749;
+    }
+    .results-icon.failed {
+        background: #feebc8;
+        color: #c05621;
+    }
+    .results-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+    .results-score {
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 20px 0;
+    }
+    .results-score.passed {
+        color: #48bb78;
+    }
+    .results-score.failed {
+        color: #ed8936;
+    }
+    .results-message {
+        color: #718096;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+    }
+    .results-details {
+        background: #f7fafc;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+    .results-details h4 {
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+    .results-details ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+    }
+    .results-details li {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .results-details li:last-child {
+        border-bottom: none;
+    }
+    .results-details li i {
+        margin-top: 3px;
+    }
+    .results-details li.correct i {
+        color: #48bb78;
+    }
+    .results-details li.incorrect i {
+        color: #f56565;
+    }
+    .results-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-results {
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .btn-retry {
+        background: {% if course == 'data-analyse' %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% else %}linear-gradient(135deg, #ec4899 0%, #f43f5e 100%){% endif %};
+        color: white;
+    }
+    .btn-retry:hover {
+        opacity: 0.9;
+        color: white;
+    }
+    .btn-back {
+        background: #f7fafc;
+        color: #4a5568;
+        border: 2px solid #e2e8f0;
+    }
+    .btn-back:hover {
+        background: #edf2f7;
+    }
+</style>
+
+<div class="quiz-hero">
+    <div class="container text-center">
+        <h1><i class="fas fa-tasks me-2"></i>Quiz : {{ lesson.title }}</h1>
+        <p>Testez vos connaissances sur cette leçon. Objectif : 70% pour valider !</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="quiz-container">
+        <div class="quiz-progress">
+            <span class="progress-text">Question <span id="currentQ">1</span>/{{ lesson.quiz|length }}</span>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBar" style="width: {{ (1 / lesson.quiz|length * 100)|round }}%"></div>
+            </div>
+            <span class="progress-text" id="scoreText">Score: 0</span>
+        </div>
+        
+        {% for q in lesson.quiz %}
+        <div class="question-card {% if loop.first %}active{% endif %}" data-question="{{ loop.index0 }}" data-answer="{{ q.answer }}">
+            <div class="question-number">Question {{ loop.index }} sur {{ lesson.quiz|length }}</div>
+            <div class="question-text">{{ q.q }}</div>
+            
+            <div class="choices">
+                {% for choice in q.choices %}
+                <div class="choice" data-choice="{{ loop.index0 }}">
+                    <span class="choice-letter">{{ ['A', 'B', 'C', 'D'][loop.index0] }}</span>
+                    <span class="choice-text">{{ choice }}</span>
+                    <span class="choice-icon"><i class="fas fa-check"></i></span>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="quiz-actions">
+                <button class="btn-quiz-nav btn-prev" {% if loop.first %}disabled{% endif %}>
+                    <i class="fas fa-arrow-left me-1"></i>Précédent
+                </button>
+                <button class="btn-quiz-nav btn-next-q" disabled>
+                    {% if loop.last %}
+                    Voir les résultats <i class="fas fa-check ms-1"></i>
+                    {% else %}
+                    Suivant <i class="fas fa-arrow-right ms-1"></i>
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="results-card" id="resultsCard">
+            <div class="results-icon" id="resultsIcon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2 class="results-title" id="resultsTitle">Résultats du Quiz</h2>
+            <div class="results-score" id="resultsScore">0%</div>
+            <p class="results-message" id="resultsMessage"></p>
+            
+            <div class="results-details">
+                <h4><i class="fas fa-list-check me-2"></i>Détail des réponses</h4>
+                <ul id="resultsDetailsList"></ul>
+            </div>
+            
+            <div class="results-actions">
+                <a href="javascript:location.reload()" class="btn-results btn-retry">
+                    <i class="fas fa-redo me-1"></i>Réessayer
+                </a>
+                {% if course == 'data-analyse' %}
+                <a href="{{ url_for('education.data_analyse_lesson', lesson_id=lesson.id) }}" class="btn-results btn-back">
+                    <i class="fas fa-book-open me-1"></i>Revoir la leçon
+                </a>
+                <a href="{{ url_for('education.data_analyse') }}" class="btn-results btn-back">
+                    <i class="fas fa-list me-1"></i>Retour au cours
+                </a>
+                {% else %}
+                <a href="{{ url_for('education.marketing_digital_lesson', lesson_id=lesson.id) }}" class="btn-results btn-back">
+                    <i class="fas fa-book-open me-1"></i>Revoir la leçon
+                </a>
+                <a href="{{ url_for('education.marketing_digital') }}" class="btn-results btn-back">
+                    <i class="fas fa-list me-1"></i>Retour au cours
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const questions = document.querySelectorAll('.question-card');
+    const totalQuestions = {{ lesson.quiz|length }};
+    const answers = new Array(totalQuestions).fill(-1);
+    const correctAnswers = [];
+    let currentIndex = 0;
+    let score = 0;
+    
+    // Store correct answers
+    questions.forEach(q => {
+        correctAnswers.push(parseInt(q.dataset.answer));
+    });
+    
+    // Handle choice selection
+    document.querySelectorAll('.choice').forEach(choice => {
+        choice.addEventListener('click', function() {
+            const questionCard = this.closest('.question-card');
+            const questionIndex = parseInt(questionCard.dataset.question);
+            const choiceIndex = parseInt(this.dataset.choice);
+            
+            // If already answered, don't allow changes
+            if (questionCard.classList.contains('answered')) return;
+            
+            // Remove previous selection
+            questionCard.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+            
+            // Add selection
+            this.classList.add('selected');
+            answers[questionIndex] = choiceIndex;
+            
+            // Mark as answered and show correct/incorrect
+            questionCard.classList.add('answered');
+            const correctAnswer = correctAnswers[questionIndex];
+            
+            questionCard.querySelectorAll('.choice').forEach((c, idx) => {
+                if (idx === correctAnswer) {
+                    c.classList.add('correct');
+                    c.querySelector('.choice-icon').innerHTML = '<i class="fas fa-check"></i>';
+                } else if (idx === choiceIndex && choiceIndex !== correctAnswer) {
+                    c.classList.add('incorrect');
+                    c.querySelector('.choice-icon').innerHTML = '<i class="fas fa-times"></i>';
+                }
+            });
+            
+            // Update score
+            if (choiceIndex === correctAnswer) {
+                score++;
+                document.getElementById('scoreText').textContent = `Score: ${score}`;
+            }
+            
+            // Enable next button
+            questionCard.querySelector('.btn-next-q').disabled = false;
+        });
+    });
+    
+    // Handle navigation
+    document.querySelectorAll('.btn-prev').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (currentIndex > 0) {
+                goToQuestion(currentIndex - 1);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.btn-next-q').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (currentIndex < totalQuestions - 1) {
+                goToQuestion(currentIndex + 1);
+            } else {
+                showResults();
+            }
+        });
+    });
+    
+    function goToQuestion(index) {
+        questions[currentIndex].classList.remove('active');
+        questions[index].classList.add('active');
+        currentIndex = index;
+        
+        // Update progress
+        document.getElementById('currentQ').textContent = index + 1;
+        document.getElementById('progressBar').style.width = ((index + 1) / totalQuestions * 100) + '%';
+    }
+    
+    function showResults() {
+        questions.forEach(q => q.classList.remove('active'));
+        
+        const percentage = Math.round((score / totalQuestions) * 100);
+        const passed = percentage >= 70;
+        
+        const resultsCard = document.getElementById('resultsCard');
+        const resultsIcon = document.getElementById('resultsIcon');
+        const resultsTitle = document.getElementById('resultsTitle');
+        const resultsScore = document.getElementById('resultsScore');
+        const resultsMessage = document.getElementById('resultsMessage');
+        const resultsList = document.getElementById('resultsDetailsList');
+        
+        resultsIcon.className = 'results-icon ' + (passed ? 'passed' : 'failed');
+        resultsIcon.innerHTML = passed ? '<i class="fas fa-trophy"></i>' : '<i class="fas fa-book"></i>';
+        
+        resultsTitle.textContent = passed ? 'Félicitations !' : 'Pas encore...';
+        
+        resultsScore.textContent = percentage + '%';
+        resultsScore.className = 'results-score ' + (passed ? 'passed' : 'failed');
+        
+        resultsMessage.textContent = passed 
+            ? `Excellent travail ! Vous avez répondu correctement à ${score}/${totalQuestions} questions.`
+            : `Vous avez obtenu ${score}/${totalQuestions}. Relisez la leçon et réessayez !`;
+        
+        // Build details list
+        resultsList.innerHTML = '';
+        const quizData = {{ lesson.quiz|tojson }};
+        quizData.forEach((q, i) => {
+            const isCorrect = answers[i] === correctAnswers[i];
+            const li = document.createElement('li');
+            li.className = isCorrect ? 'correct' : 'incorrect';
+            li.innerHTML = `
+                <i class="fas fa-${isCorrect ? 'check-circle' : 'times-circle'}"></i>
+                <div>
+                    <strong>${q.q}</strong><br>
+                    <small>Votre réponse: ${q.choices[answers[i]] || 'Non répondu'}</small>
+                    ${!isCorrect ? `<br><small style="color: #48bb78;">Bonne réponse: ${q.choices[correctAnswers[i]]}</small>` : ''}
+                </div>
+            `;
+            resultsList.appendChild(li);
+        });
+        
+        resultsCard.classList.add('active');
+        
+        // Save progress to backend
+        fetch('{{ url_for("education.submit_quiz", course=course, lesson_id=lesson.id) }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answers: answers })
+        });
+    }
+});
+</script>
+{% endblock %}

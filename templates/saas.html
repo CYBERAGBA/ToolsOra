@@ -1,0 +1,671 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+/* Hero */
+.saas-hero {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d3748 50%, #1a202c 100%);
+  color: #fff; padding: 50px 0 40px; margin-bottom: 30px;
+  position: relative; overflow: hidden;
+}
+.saas-hero::before {
+  content:''; position:absolute; top:-50%; right:-8%;
+  width:450px; height:450px;
+  background:radial-gradient(circle, rgba(102,126,234,.22) 0%, transparent 70%);
+  border-radius:50%;
+}
+.saas-hero h1 { font-size:2.3rem; font-weight:700; margin-bottom:10px; }
+.saas-hero p.lead { color:rgba(255,255,255,.82); max-width:650px; }
+
+.sub-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background: linear-gradient(135deg,#48bb78,#38a169);
+  color:#fff; padding:10px 22px; border-radius:25px;
+  font-weight:600; font-size:.95rem; margin-bottom:18px;
+}
+.sub-badge i { color:#fbbf24; }
+
+/* Tools grid */
+.tools-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+  gap:18px; margin-bottom:35px;
+}
+.tool-card {
+  background:#fff; border-radius:14px; padding:25px;
+  box-shadow:0 4px 18px rgba(0,0,0,.07);
+  transition: transform .3s, box-shadow .3s;
+  position:relative; overflow:hidden;
+}
+.tool-card:hover { transform:translateY(-4px); box-shadow:0 10px 30px rgba(0,0,0,.12); }
+.tool-card .tc-icon {
+  width:48px; height:48px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; color:#fff; margin-bottom:14px;
+}
+.tool-card h4 { font-size:1.1rem; font-weight:600; color:#2d3748; margin-bottom:6px; }
+.tool-card p { color:#718096; font-size:.9rem; line-height:1.5; margin-bottom:14px; }
+.tool-card .tc-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 18px; border-radius:8px; font-weight:500;
+  text-decoration:none; font-size:.88rem; transition:all .25s;
+}
+.tc-btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; }
+.tc-btn-primary:hover { opacity:.9; color:#fff; }
+.tc-lock { color:#a0aec0; font-size:.82rem; display:flex; align-items:center; gap:5px; }
+
+/* Tool sections */
+.tool-section {
+  background:#fff; border-radius:14px; padding:30px;
+  box-shadow:0 4px 18px rgba(0,0,0,.07); margin-bottom:22px;
+}
+.tool-section h3 { color:#2d3748; font-size:1.3rem; margin-bottom:8px; }
+
+/* Pricing */
+.pricing-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+  gap:16px;
+}
+.pricing-card { position:relative; border:1px solid #e5e7eb; }
+.pricing-card.popular { border:2px solid #4f46e5; }
+.badge-pop {
+  position:absolute; right:14px; top:14px;
+  background:#4f46e5; color:#fff; padding:4px 10px;
+  border-radius:999px; font-size:11px;
+}
+.price { font-size:28px; font-weight:700; margin:10px 0; }
+.price span { font-size:14px; font-weight:400; color:#64748b; }
+.plan-list { list-style:none; padding:0; margin:12px 0; }
+.plan-list li { margin:6px 0; font-size:14px; }
+.pay-form { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.pay-form input, .pay-form select { width:100%; }
+.cta-link { display:inline-block; margin-top:10px; }
+.steps { margin:10px 0; padding-left:20px; }
+.steps li { margin-bottom:8px; }
+
+/* Tabs */
+.saas-tabs {
+  display:flex; gap:12px; margin-bottom:30px; flex-wrap:wrap;
+  background:#f7fafc; padding:8px; border-radius:16px;
+}
+.saas-tab {
+  padding:14px 32px; border-radius:12px; border:none;
+  background:transparent; color:#4a5568; font-weight:600; cursor:pointer;
+  transition:all .25s; text-decoration:none; font-size:1.05rem;
+  flex:1; text-align:center; min-width:180px;
+}
+.saas-tab:hover { background:rgba(102,126,234,.1); color:#667eea; }
+.saas-tab.active {
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  color:#fff; box-shadow:0 4px 15px rgba(102,126,234,.35);
+}
+.saas-panel { display:none; }
+.saas-panel.active { display:block; }
+</style>
+
+<!-- HERO -->
+<div class="saas-hero">
+  <div class="container">
+    {% if current_user.is_authenticated and active_subscription %}
+      <div class="sub-badge"><i class="fas fa-crown"></i>{{ 'Premium Subscriber' if is_en else 'Abonne Premium' }} &mdash; {{ active_subscription.plan|upper }}</div>
+    {% endif %}
+    <h1><i class="fas fa-tools me-2"></i>{{ 'SaaS Tools' if is_en else 'Outils SaaS &mdash; ToolsOra' }}</h1>
+    <p class="lead">
+      {{ 'Convert files, generate CVs, QR codes, use calculators and more. All in one place.' if is_en else 'Convertissez des fichiers, generez des CV, codes QR, utilisez des calculateurs et plus. Tout en un seul endroit.' }}
+    </p>
+  </div>
+</div>
+
+<div class="container">
+
+  {% set is_premium = current_user.is_authenticated and active_subscription %}
+
+  <!-- TABS -->
+  <div class="saas-tabs">
+    <a class="saas-tab {% if is_premium %}active{% endif %}" data-panel="tools" href="#">
+      <i class="fas fa-tools me-2"></i>{{ 'Tools' if is_en else 'Outils' }}
+    </a>
+    <a class="saas-tab {% if not is_premium %}active{% endif %}" data-panel="pricing" href="#">
+      <i class="fas fa-tags me-2"></i>{{ 'Plans & Pricing' if is_en else 'Plans & Tarifs' }}
+    </a>
+  </div>
+
+  <!-- ==========================================
+       PANEL : TOOLS
+  ========================================== -->
+  <div class="saas-panel {% if is_premium %}active{% endif %}" id="panel-tools">
+
+    <!-- Tools overview grid -->
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tc-icon" style="background:linear-gradient(135deg,#667eea,#764ba2);"><i class="fas fa-globe"></i></div>
+        <h4>{{ 'Currency Converter' if is_en else 'Convertisseur de Devises' }}</h4>
+        <p>{{ 'Convert instantly between 200+ currencies with live rates.' if is_en else 'Convertissez instantanement entre 200+ devises avec taux en direct.' }}</p>
+        <a href="#currency-section" class="tc-btn tc-btn-primary"><i class="fas fa-arrow-down"></i>{{ 'Use tool' if is_en else 'Utiliser' }}</a>
+      </div>
+
+      <div class="tool-card">
+        <div class="tc-icon" style="background:linear-gradient(135deg,#38b2ac,#319795);"><i class="fas fa-file-pdf"></i></div>
+        <h4>{{ 'File Conversion' if is_en else 'Conversion de Fichiers' }}</h4>
+        <p>{{ 'PDF to DOCX and DOCX to PDF server-side conversion.' if is_en else 'PDF vers DOCX et DOCX vers PDF, conversion serveur.' }}</p>
+        {% if is_premium %}
+          <a href="#converter-form" class="tc-btn tc-btn-primary"><i class="fas fa-arrow-down"></i>{{ 'Use tool' if is_en else 'Utiliser' }}</a>
+        {% else %}
+          <span class="tc-lock"><i class="fas fa-lock"></i>{{ 'Premium only' if is_en else 'Reserve Premium' }}</span>
+        {% endif %}
+      </div>
+
+      <div class="tool-card">
+        <div class="tc-icon" style="background:linear-gradient(135deg,#ed8936,#dd6b20);"><i class="fas fa-qrcode"></i></div>
+        <h4>{{ 'QR Generator' if is_en else 'Generateur QR' }}</h4>
+        <p>{{ 'Create QR codes from any text, URL or contact info.' if is_en else 'Creez des codes QR depuis du texte, URL ou contacts.' }}</p>
+        {% if is_premium %}
+          <a href="#qr-section-form" class="tc-btn tc-btn-primary"><i class="fas fa-arrow-down"></i>{{ 'Use tool' if is_en else 'Utiliser' }}</a>
+        {% else %}
+          <span class="tc-lock"><i class="fas fa-lock"></i>{{ 'Premium only' if is_en else 'Reserve Premium' }}</span>
+        {% endif %}
+      </div>
+
+      <div class="tool-card">
+        <div class="tc-icon" style="background:linear-gradient(135deg,#e53e3e,#c53030);"><i class="fas fa-file-word"></i></div>
+        <h4>{{ 'Professional CV' if is_en else 'CV Professionnel' }}</h4>
+        <p>{{ 'Generate a professional DOCX CV from your profile.' if is_en else 'Generez un CV professionnel DOCX depuis votre profil.' }}</p>
+        {% if is_premium %}
+          <a href="#cv-section" class="tc-btn tc-btn-primary"><i class="fas fa-arrow-down"></i>{{ 'Use tool' if is_en else 'Utiliser' }}</a>
+        {% else %}
+          <span class="tc-lock"><i class="fas fa-lock"></i>{{ 'Premium only' if is_en else 'Reserve Premium' }}</span>
+        {% endif %}
+      </div>
+
+      <div class="tool-card">
+        <div class="tc-icon" style="background:linear-gradient(135deg,#9f7aea,#805ad5);"><i class="fas fa-code"></i></div>
+        <h4>{{ 'Code Generator' if is_en else 'Generateur de Code' }}</h4>
+        <p>{{ 'Generate code files (Python, JS, HTML) from instructions.' if is_en else 'Generez du code (Python, JS, HTML) depuis des instructions.' }}</p>
+        {% if is_premium %}
+          <a href="#code-section" class="tc-btn tc-btn-primary"><i class="fas fa-arrow-down"></i>{{ 'Use tool' if is_en else 'Utiliser' }}</a>
+        {% else %}
+          <span class="tc-lock"><i class="fas fa-lock"></i>{{ 'Premium only' if is_en else 'Reserve Premium' }}</span>
+        {% endif %}
+      </div>
+
+      <div class="tool-card">
+        <div class="tc-icon" style="background:linear-gradient(135deg,#d69e2e,#b7791f);"><i class="fas fa-calculator"></i></div>
+        <h4>{{ 'Specialized Calculator' if is_en else 'Calculateur Specialise' }}</h4>
+        <p>{{ 'Loan (monthly payment) and BMI calculations.' if is_en else 'Calculs de pret (mensualite) et BMI.' }}</p>
+        {% if is_premium %}
+          <a href="#calc-section" class="tc-btn tc-btn-primary"><i class="fas fa-arrow-down"></i>{{ 'Use tool' if is_en else 'Utiliser' }}</a>
+        {% else %}
+          <span class="tc-lock"><i class="fas fa-lock"></i>{{ 'Premium only' if is_en else 'Reserve Premium' }}</span>
+        {% endif %}
+      </div>
+
+      <div class="tool-card">
+        <div class="tc-icon" style="background:linear-gradient(135deg,#4299e1,#3182ce);"><i class="fas fa-file-alt"></i></div>
+        <h4>PDF Tools</h4>
+        <p>{{ 'Merge multiple PDFs or split a PDF page by page.' if is_en else 'Fusionnez plusieurs PDFs ou divisez un PDF page par page.' }}</p>
+        {% if is_premium %}
+          <a href="#pdf-tools" class="tc-btn tc-btn-primary"><i class="fas fa-arrow-down"></i>{{ 'Use tool' if is_en else 'Utiliser' }}</a>
+        {% else %}
+          <span class="tc-lock"><i class="fas fa-lock"></i>{{ 'Premium only' if is_en else 'Reserve Premium' }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if not is_premium %}
+      <div class="card" style="background:linear-gradient(135deg,#ebf8ff,#e6fffa);border-left:4px solid #667eea;padding:20px;border-radius:12px;margin-bottom:30px;">
+        <p style="margin:0;color:#2d3748;font-weight:500;">
+          <i class="fas fa-crown" style="color:#d69e2e;margin-right:8px;"></i>
+          {{ 'Subscribe to a Premium plan to unlock all tools below!' if is_en else 'Abonnez-vous a un plan Premium pour debloquer tous les outils ci-dessous !' }}
+          <a href="#" class="saas-tab-link" data-panel="pricing" style="color:#667eea;font-weight:600;margin-left:8px;">{{ 'View plans' if is_en else 'Voir les plans' }} &rarr;</a>
+        </p>
+      </div>
+    {% endif %}
+
+    <!-- CURRENCY CONVERTER (free) -->
+    <section class="tool-section" id="currency-section">
+      <h3><i class="fas fa-globe me-2" style="color:#667eea;"></i>{{ 'Currency Converter' if is_en else 'Convertisseur de Devises' }}</h3>
+      <p class="small muted">{{ 'Convert instantly between 200+ currencies with current rates.' if is_en else 'Convertissez instantanement entre 200+ devises avec les taux actuels.' }}</p>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:15px;margin:15px 0;">
+        <div style="background:#f8f8f8;padding:15px;border-radius:12px;">
+          <label style="font-size:12px;font-weight:600;color:#555;">{{ 'Amount to convert' if is_en else 'Montant a convertir' }}</label>
+          <input id="currencyAmount" type="number" value="100" min="0" style="width:100%;padding:10px;margin-top:8px;border:2px solid #e0e0e0;border-radius:8px;">
+          <select id="currencyFrom" style="width:100%;padding:10px;margin-top:8px;border:2px solid #e0e0e0;border-radius:8px;">
+            <option value="EUR">EUR - Euro</option>
+            <option value="USD">USD - Dollar US</option>
+            <option value="GBP">GBP - Livre Sterling</option>
+            <option value="XOF">XOF - Franc CFA</option>
+            <option value="JPY">JPY - Yen</option>
+            <option value="CHF">CHF - Franc Suisse</option>
+            <option value="CAD">CAD - Dollar Canadien</option>
+            <option value="AUD">AUD - Dollar Australien</option>
+            <option value="CNY">CNY - Yuan</option>
+            <option value="INR">INR - Roupie</option>
+            <option value="BRL">BRL - Real</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <button id="currencySwap" style="width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;cursor:pointer;font-size:18px;">&lrarr;</button>
+        </div>
+        <div style="background:#f8f8f8;padding:15px;border-radius:12px;">
+          <label style="font-size:12px;font-weight:600;color:#555;">{{ 'Converted amount' if is_en else 'Montant converti' }}</label>
+          <input id="currencyResult" type="number" readonly style="width:100%;padding:10px;margin-top:8px;background:white;border:2px solid #e0e0e0;border-radius:8px;">
+          <select id="currencyTo" style="width:100%;padding:10px;margin-top:8px;border:2px solid #e0e0e0;border-radius:8px;">
+            <option value="USD" selected>USD - Dollar US</option>
+            <option value="EUR">EUR - Euro</option>
+            <option value="GBP">GBP - Livre Sterling</option>
+            <option value="XOF">XOF - Franc CFA</option>
+            <option value="JPY">JPY - Yen</option>
+            <option value="CHF">CHF - Franc Suisse</option>
+            <option value="CAD">CAD - Dollar Canadien</option>
+            <option value="AUD">AUD - Dollar Australien</option>
+            <option value="CNY">CNY - Yuan</option>
+            <option value="INR">INR - Roupie</option>
+            <option value="BRL">BRL - Real</option>
+          </select>
+        </div>
+      </div>
+      <div style="background:#f0f7ff;padding:12px;border-left:4px solid #667eea;border-radius:6px;">
+        <p id="currencyRate" class="small muted" style="margin:0;">{{ 'Exchange rate: Loading...' if is_en else 'Taux de change: Chargement...' }}</p>
+      </div>
+    </section>
+
+    {% if is_premium %}
+    <!-- FILE CONVERTER -->
+    <section class="tool-section" id="converter-form">
+      <h3><i class="fas fa-file-pdf me-2" style="color:#38b2ac;"></i>{{ 'File Conversion' if is_en else 'Conversion de Fichiers' }}</h3>
+      <form id="convert-form-el" enctype="multipart/form-data">
+        <label for="file">{{ 'File' if is_en else 'Fichier' }}</label>
+        <div id="drop-area" class="card" style="padding:12px;border-style:dashed;border-width:1px">
+          <input id="file" name="file" type="file" accept=".pdf,.doc,.docx" required />
+          <div class="small muted">{{ 'Drag and drop or click to select.' if is_en else 'Glissez-deposez ou cliquez pour selectionner.' }}</div>
+        </div>
+        <label for="direction">{{ 'Conversion' if is_en else 'Conversion' }}</label>
+        <select id="direction" name="direction">
+          <option value="pdf-to-docx">PDF &rarr; DOCX</option>
+          <option value="docx-to-pdf">DOCX &rarr; PDF</option>
+        </select>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button type="submit">{{ 'Convert' if is_en else 'Convertir' }}</button>
+          <button type="button" id="clear-convert" class="kbd">{{ 'Clear' if is_en else 'Effacer' }}</button>
+        </div>
+      </form>
+      <div id="convert-result" style="margin-top:12px"></div>
+    </section>
+
+    <!-- PDF TOOLS -->
+    <section class="tool-section" id="pdf-tools">
+      <h3><i class="fas fa-file-alt me-2" style="color:#4299e1;"></i>PDF Tools</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <h4>{{ 'Merge PDFs' if is_en else 'Fusionner des PDFs' }}</h4>
+          <form id="merge-form" enctype="multipart/form-data">
+            <input name="files" type="file" multiple accept="application/pdf" required />
+            <div style="margin-top:8px"><button type="submit">{{ 'Merge' if is_en else 'Fusionner' }}</button></div>
+          </form>
+          <div id="merge-result" class="small muted" style="margin-top:8px"></div>
+        </div>
+        <div style="flex:1;min-width:260px">
+          <h4>{{ 'Split PDF' if is_en else 'Diviser un PDF' }}</h4>
+          <form id="split-form" enctype="multipart/form-data">
+            <input id="split-file" name="file" type="file" accept="application/pdf" required />
+            <div style="margin-top:8px"><button type="submit">{{ 'Split' if is_en else 'Diviser' }}</button></div>
+          </form>
+          <div id="split-result" class="small muted" style="margin-top:8px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CODE GENERATOR -->
+    <section class="tool-section" id="code-section">
+      <h3><i class="fas fa-code me-2" style="color:#9f7aea;"></i>{{ 'Code Generator' if is_en else 'Generateur de Code' }}</h3>
+      <form id="code-gen-form">
+        <label for="code-name">{{ 'File name' if is_en else 'Nom du fichier' }}</label>
+        <input id="code-name" name="name" placeholder="mon_script" />
+        <label for="code-language">{{ 'Language' if is_en else 'Langage' }}</label>
+        <select id="code-language" name="language">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="html">HTML</option>
+        </select>
+        <label for="code-desc">{{ 'Description / instructions' if is_en else 'Description / instructions' }}</label>
+        <textarea id="code-desc" name="description" placeholder="{{ 'What the code should do...' if is_en else 'Ce que doit faire le code...' }}"></textarea>
+        <div style="margin-top:12px"><button type="submit">{{ 'Generate' if is_en else 'Generer' }}</button></div>
+      </form>
+      <div id="code-gen-result" class="small muted" style="margin-top:8px"></div>
+    </section>
+
+    <!-- QR GENERATOR -->
+    <section class="tool-section" id="qr-section-form">
+      <h3><i class="fas fa-qrcode me-2" style="color:#ed8936;"></i>{{ 'QR Generator' if is_en else 'Generateur de QR' }}</h3>
+      <form id="qr-form">
+        <label for="qr-text">{{ 'Website, email, name...' if is_en else 'Site internet, email, nom...' }}</label>
+        <input id="qr-text" name="text" placeholder="{{ 'https://example.com or name, email' if is_en else 'https://example.com ou nom, email' }}" />
+        <div style="margin-top:12px"><button type="submit">{{ 'Generate QR' if is_en else 'Generer QR' }}</button></div>
+      </form>
+      <div id="qr-result" class="small muted" style="margin-top:8px"></div>
+    </section>
+
+    <!-- CV GENERATOR -->
+    <section class="tool-section" id="cv-section">
+      <h3><i class="fas fa-file-word me-2" style="color:#e53e3e;"></i>{{ 'Professional CV Generator' if is_en else 'Generateur de CV Professionnel' }}</h3>
+      <form id="cv-form">
+        <label for="cv-name">{{ 'Name' if is_en else 'Nom' }}</label>
+        <input id="cv-name" name="name" />
+        <label for="cv-title">{{ 'Title' if is_en else 'Titre' }}</label>
+        <input id="cv-title" name="title" />
+        <label for="cv-contact">{{ 'Contact' if is_en else 'Contact' }}</label>
+        <input id="cv-contact" name="contact" />
+        <label for="cv-photo">{{ 'Profile photo (optional)' if is_en else 'Photo identite (optionnelle)' }}</label>
+        <input id="cv-photo" name="photo" type="file" accept="image/*" />
+        <label for="cv-summary">{{ 'Summary' if is_en else 'Resume' }}</label>
+        <textarea id="cv-summary" name="summary"></textarea>
+        <label for="cv-skills">{{ 'Skills (comma-separated)' if is_en else 'Competences (separees par virgule)' }}</label>
+        <input id="cv-skills" name="skills" placeholder="{{ 'Python, SQL, Management' if is_en else 'Python, SQL, Gestion' }}" />
+        <div style="margin-top:12px"><button type="submit">{{ 'Generate CV' if is_en else 'Generer CV' }}</button></div>
+      </form>
+      <div id="cv-result" class="small muted" style="margin-top:8px"></div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section class="tool-section" id="calc-section">
+      <h3><i class="fas fa-calculator me-2" style="color:#d69e2e;"></i>{{ 'Specialized Calculator' if is_en else 'Calculateur Specialise' }}</h3>
+      <form id="calc-form">
+        <label for="calc-type">Type</label>
+        <select id="calc-type" name="type">
+          <option value="loan">{{ 'Loan (monthly payment)' if is_en else 'Pret (mensualite)' }}</option>
+          <option value="bmi">BMI</option>
+        </select>
+        <div id="loan-fields" style="margin-top:8px">
+          <label>{{ 'Principal amount' if is_en else 'Montant principal' }}</label>
+          <input id="loan-principal" name="principal" placeholder="10000" />
+          <label>{{ 'Annual rate (%)' if is_en else 'Taux annuel (%)' }}</label>
+          <input id="loan-rate" name="annual_rate" placeholder="5" />
+          <label>{{ 'Duration (years)' if is_en else 'Duree (annees)' }}</label>
+          <input id="loan-years" name="years" placeholder="3" />
+        </div>
+        <div id="bmi-fields" style="margin-top:8px;display:none">
+          <label>{{ 'Weight (kg)' if is_en else 'Poids (kg)' }}</label>
+          <input id="bmi-weight" name="weight_kg" placeholder="70" />
+          <label>{{ 'Height (cm)' if is_en else 'Taille (cm)' }}</label>
+          <input id="bmi-height" name="height_cm" placeholder="175" />
+        </div>
+        <div style="margin-top:12px"><button type="submit">{{ 'Calculate' if is_en else 'Calculer' }}</button></div>
+      </form>
+      <div id="calc-result" class="small muted" style="margin-top:8px"></div>
+    </section>
+    {% endif %}
+
+  </div>
+
+  <!-- ==========================================
+       PANEL : PRICING
+  ========================================== -->
+  <div class="saas-panel {% if not is_premium %}active{% endif %}" id="panel-pricing">
+
+    {% if current_user.is_authenticated and active_subscription %}
+      <div class="card status-card" style="margin-bottom:16px;">
+        <h3>{{ 'Your subscription is active' if is_en else 'Votre abonnement est actif' }} &#10004;</h3>
+        <p class="small muted">{{ ('Plan ' ~ active_subscription.plan|upper ~ ' &mdash; expires on ' ~ active_subscription.ends_at) if is_en else ('Plan ' ~ active_subscription.plan|upper ~ ' &mdash; expiration le ' ~ active_subscription.ends_at) }}</p>
+      </div>
+    {% elif current_user.is_authenticated and latest_payment and latest_payment.status == 'pending_manual_confirmation' %}
+      <div class="card status-card" style="margin-bottom:16px;">
+        <h3>{{ 'Validation in progress' if is_en else 'Validation en cours' }} &#9203;</h3>
+        <p class="small muted">{{ ('Your payment is waiting for admin validation. Ref: ' ~ latest_payment.transaction_ref) if is_en else ('Votre paiement est en attente de validation admin. Reference: ' ~ latest_payment.transaction_ref) }}</p>
+      </div>
+    {% elif not current_user.is_authenticated %}
+      <div class="card" style="margin-bottom:16px;">
+        <p><a href="/auth/login">{{ 'Sign in' if is_en else 'Connectez-vous' }}</a> {{ 'to choose your plan.' if is_en else 'pour choisir votre plan.' }}</p>
+      </div>
+    {% endif %}
+
+    <div class="pricing-grid">
+      {% for plan in plans %}
+        <div class="card pricing-card {% if plan.is_popular %}popular{% endif %}">
+          {% if plan.is_popular %}<span class="badge-pop">{{ 'Most popular' if is_en else 'Le plus choisi' }}</span>{% endif %}
+          <h3>{{ plan.name }}</h3>
+          <div class="price">${{ plan.amount_usd|int }}<span>{{ '/month' if is_en else '/mois' }}</span></div>
+          <p class="small muted">{{ plan.pitch }}</p>
+          <ul class="plan-list">
+            {% for item in plan.highlights %}
+              <li>&#10003; {{ item }}</li>
+            {% endfor %}
+          </ul>
+          {% if current_user.is_authenticated %}
+            <form method="post" action="/modules/saas/subscribe/manual" class="pay-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="plan" value="{{ plan.code }}" />
+              <label>{{ 'Mobile Money channel' if is_en else 'Canal Mobile Money' }}</label>
+              <select name="provider" required>
+                <option value="orange_money">Orange Money</option>
+                <option value="wave">Wave</option>
+              </select>
+              <label>{{ 'Payer phone number' if is_en else 'Numero payeur' }}</label>
+              <input type="text" name="payer_phone" placeholder="+2250700000000" required />
+              <label>{{ 'Transaction reference' if is_en else 'Reference transaction' }}</label>
+              <input type="text" name="transaction_ref" placeholder="OM-2026-123456" required />
+              <label>{{ 'Payer name (optional)' if is_en else 'Nom payeur (optionnel)' }}</label>
+              <input type="text" name="payer_name" placeholder="{{ 'Full name' if is_en else 'Nom complet' }}" />
+              <button type="submit">{{ plan.cta_label }}</button>
+            </form>
+          {% else %}
+            <a class="cta-link" href="/auth/login">{{ 'Sign in to choose this plan' if is_en else 'Se connecter pour choisir ce plan' }}</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>{{ 'Manual Mobile Money payment' if is_en else 'Paiement manuel Mobile Money' }}</h3>
+      <ol class="steps">
+        <li>{{ 'Send the plan amount via Orange Money or Wave to ' if is_en else 'Envoyez le montant du plan via Orange Money ou Wave au ' }}<strong>{{ merchant_phone }}</strong>.</li>
+        <li>{{ 'Fill in the transaction reference in the selected plan form.' if is_en else 'Renseignez la reference transaction dans le formulaire du plan choisi.' }}</li>
+        <li>{{ 'Admin verifies the payment, then subscription is activated automatically.' if is_en else 'Admin verifie le paiement puis abonnement active automatiquement.' }}</li>
+      </ol>
+      {% if current_user.is_authenticated and current_user.is_admin_user() %}
+        <p><a href="/payments/admin/manual">{{ 'Open admin validation back office' if is_en else 'Acceder au back-office de validation admin' }}</a></p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const isEnglish = {{ 'true' if is_en else 'false' }};
+
+  // Tab switching
+  document.querySelectorAll('.saas-tab, .saas-tab-link').forEach(function(tab) {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = this.dataset.panel;
+      document.querySelectorAll('.saas-tab').forEach(function(t){ t.classList.remove('active'); });
+      document.querySelectorAll('.saas-panel').forEach(function(p){ p.classList.remove('active'); });
+      document.querySelectorAll('.saas-tab[data-panel="'+target+'"]').forEach(function(t){ t.classList.add('active'); });
+      var panel = document.getElementById('panel-' + target);
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  // Currency converter
+  var exchangeRates = {
+    EUR:1.0, USD:1.12, GBP:0.86, JPY:150.5, CHF:0.98,
+    CAD:1.48, AUD:1.68, CNY:8.2, INR:93.5, BRL:5.6, XOF:655.957
+  };
+  function convertCurrency() {
+    var amount = parseFloat(document.getElementById('currencyAmount').value) || 0;
+    var from = document.getElementById('currencyFrom').value;
+    var to = document.getElementById('currencyTo').value;
+    if (amount === 0) { document.getElementById('currencyResult').value = '0'; return; }
+    var fromRate = exchangeRates[from] || 1;
+    var toRate = exchangeRates[to] || 1;
+    var result = (amount / fromRate) * toRate;
+    document.getElementById('currencyResult').value = result.toFixed(2);
+    document.getElementById('currencyRate').textContent =
+      '1 ' + from + ' = ' + (toRate / fromRate).toFixed(4) + ' ' + to;
+  }
+  document.getElementById('currencyAmount').addEventListener('input', convertCurrency);
+  document.getElementById('currencyFrom').addEventListener('change', convertCurrency);
+  document.getElementById('currencyTo').addEventListener('change', convertCurrency);
+  document.getElementById('currencySwap').addEventListener('click', function() {
+    var f = document.getElementById('currencyFrom');
+    var t = document.getElementById('currencyTo');
+    var tmp = f.value; f.value = t.value; t.value = tmp;
+    convertCurrency();
+  });
+  convertCurrency();
+
+  {% if is_premium %}
+  // Code generator
+  document.getElementById('code-gen-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var resEl = document.getElementById('code-gen-result');
+    resEl.textContent = isEnglish ? 'Generating...' : 'Generation en cours...';
+    try {
+      var resp = await fetch('/modules/saas/code/generate', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          name: document.getElementById('code-name').value || 'generated',
+          language: document.getElementById('code-language').value,
+          description: document.getElementById('code-desc').value || ''
+        })
+      });
+      var data = await resp.json();
+      if(data.generated) resEl.innerHTML = (isEnglish?'Generated':'Genere') + ': <a href="'+data.download+'" target="_blank">'+data.output+'</a>';
+      else resEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
+    } catch(err){ resEl.textContent = 'Error: ' + err.message; }
+  });
+
+  // QR generator
+  document.getElementById('qr-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var text = document.getElementById('qr-text').value.trim();
+    var resEl = document.getElementById('qr-result');
+    if(!text){ resEl.textContent = isEnglish ? 'Text required.' : 'Texte requis.'; return; }
+    resEl.textContent = isEnglish ? 'Generating...' : 'Generation...';
+    try {
+      var resp = await fetch('/modules/saas/qr/generate', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text:text})});
+      var data = await resp.json();
+      if(data.generated) resEl.innerHTML = 'QR: <a href="'+data.download+'" target="_blank">'+data.output+'</a><div style="margin-top:8px"><img src="'+data.data_uri+'" alt="QR" style="max-width:220px;border-radius:8px;"/></div>';
+      else resEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
+    } catch(err){ resEl.textContent = 'Error: ' + err.message; }
+  });
+
+  // CV generator
+  document.getElementById('cv-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var resEl = document.getElementById('cv-result');
+    var name = document.getElementById('cv-name').value.trim();
+    if(!name){ resEl.textContent = isEnglish ? 'Name is required.' : 'Le nom est requis.'; return; }
+    resEl.textContent = isEnglish ? 'Generating...' : 'Generation...';
+    try {
+      var form = new FormData();
+      form.append('name', name);
+      form.append('title', document.getElementById('cv-title').value.trim());
+      form.append('contact', document.getElementById('cv-contact').value.trim());
+      form.append('summary', document.getElementById('cv-summary').value.trim());
+      form.append('skills', JSON.stringify((document.getElementById('cv-skills').value||'').split(',').map(function(s){return s.trim()}).filter(Boolean)));
+      var photo = document.getElementById('cv-photo');
+      if(photo && photo.files.length > 0) form.append('photo', photo.files[0]);
+      var resp = await fetch('/modules/saas/cv/professional', {method:'POST', body:form});
+      var data = await resp.json();
+      var html = '';
+      if(data.docx) html += 'DOCX: <a href="'+data.download_docx+'" target="_blank">'+data.docx+'</a>';
+      if(data.pdf) html += '<br/>PDF: <a href="'+data.download_pdf+'" target="_blank">'+data.pdf+'</a>';
+      resEl.innerHTML = html || 'CV genere';
+    } catch(err){ resEl.textContent = 'Error: ' + err.message; }
+  });
+
+  // Calculator
+  document.getElementById('calc-type').addEventListener('change', function(){
+    document.getElementById('loan-fields').style.display = (this.value==='loan')? 'block':'none';
+    document.getElementById('bmi-fields').style.display = (this.value==='bmi')? 'block':'none';
+  });
+  document.getElementById('calc-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var t = document.getElementById('calc-type').value;
+    var resEl = document.getElementById('calc-result');
+    var body = {type:t};
+    if(t==='loan'){
+      body.principal = parseFloat(document.getElementById('loan-principal').value);
+      body.annual_rate = parseFloat(document.getElementById('loan-rate').value) || 0;
+      body.years = parseFloat(document.getElementById('loan-years').value);
+      if(!body.principal || !body.years){ resEl.textContent = 'Valeurs invalides'; return; }
+    } else {
+      body.weight_kg = parseFloat(document.getElementById('bmi-weight').value);
+      body.height_cm = parseFloat(document.getElementById('bmi-height').value);
+      if(!body.weight_kg || !body.height_cm){ resEl.textContent = 'Valeurs invalides'; return; }
+    }
+    resEl.textContent = isEnglish ? 'Calculating...' : 'Calcul...';
+    try {
+      var resp = await fetch('/modules/saas/calculator/calc', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+      var data = await resp.json();
+      if(data.type==='loan') resEl.textContent = (isEnglish?'Monthly payment':'Mensualite') + ': ' + data.monthly_payment + ' (' + data.periods + (isEnglish?' periods':' periodes') + ')';
+      else if(data.type==='bmi') resEl.textContent = 'BMI: ' + data.bmi;
+      else resEl.textContent = JSON.stringify(data);
+    } catch(err){ resEl.textContent = 'Error: ' + err.message; }
+  });
+
+  // File converter
+  var convertForm = document.getElementById('convert-form-el');
+  if (convertForm) {
+    convertForm.addEventListener('submit', async function(e){
+      e.preventDefault();
+      var resEl = document.getElementById('convert-result');
+      resEl.textContent = isEnglish ? 'Converting...' : 'Conversion...';
+      var fd = new FormData(this);
+      try {
+        var resp = await fetch('/modules/saas/convert', {method:'POST', body:fd});
+        var data = await resp.json();
+        if(data.download) resEl.innerHTML = '<a href="'+data.download+'" target="_blank">'+(isEnglish?'Download':'Telecharger')+': '+data.output+'</a>';
+        else resEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
+      } catch(err){ resEl.textContent = 'Error: ' + err.message; }
+    });
+  }
+
+  // PDF merge / split
+  var mergeForm = document.getElementById('merge-form');
+  if (mergeForm) {
+    mergeForm.addEventListener('submit', async function(e){
+      e.preventDefault();
+      var resEl = document.getElementById('merge-result');
+      resEl.textContent = isEnglish ? 'Merging...' : 'Fusion...';
+      try {
+        var resp = await fetch('/modules/saas/pdf/merge', {method:'POST', body:new FormData(this)});
+        var data = await resp.json();
+        if(data.download) resEl.innerHTML = '<a href="'+data.download+'" target="_blank">'+data.output+'</a>';
+        else resEl.textContent = 'Error: ' + (data.error || JSON.stringify(data));
+      } catch(err){ resEl.textContent = 'Error: ' + err.message; }
+    });
+  }
+  var splitForm = document.getElementById('split-form');
+  if (splitForm) {
+    splitForm.addEventListener('submit', async function(e){
+      e.preventDefault();
+      var resEl = document.getElementById('split-result');
+      resEl.textContent = isEnglish ? 'Splitting...' : 'Division...';
+      try {
+        var resp = await fetch('/modules/saas/pdf/split', {method:'POST', body:new FormData(this)});
+        var data = await resp.json();
+        if(data.pages && data.pages.length) {
+          resEl.innerHTML = '<strong>' + data.pages.length + ' pages:</strong><br/>' +
+            data.pages.map(function(p){ return '<a href="'+p.download+'" target="_blank">'+p.output+'</a>'; }).join('<br/>');
+        } else if(data.error) {
+          resEl.textContent = 'Error: ' + data.error;
+        } else {
+          resEl.textContent = 'Error: ' + JSON.stringify(data);
+        }
+      } catch(err){ resEl.textContent = 'Error: ' + err.message; }
+    });
+  }
+
+  // Clear button for file converter
+  var clearBtn = document.getElementById('clear-convert');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function(){
+      var form = document.getElementById('convert-form-el');
+      if(form) form.reset();
+      var res = document.getElementById('convert-result');
+      if(res) res.textContent = '';
+    });
+  }
+  {% endif %}
+</script>
+{% endblock %}

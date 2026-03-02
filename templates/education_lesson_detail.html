@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} - Formation Premium | OraHub{% endblock %}
+
+{% block content %}
+<style>
+    .lesson-hero {
+        background: {% if course == 'data-analyse' %}linear-gradient(135deg, #1a365d 0%, #2d3748 100%){% else %}linear-gradient(135deg, #9f1239 0%, #be185d 100%){% endif %};
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 40px;
+    }
+    .lesson-hero .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 15px;
+    }
+    .lesson-hero .breadcrumb a {
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+    }
+    .lesson-hero .breadcrumb a:hover {
+        color: white;
+    }
+    .lesson-hero .breadcrumb-item.active {
+        color: rgba(255,255,255,0.6);
+    }
+    .lesson-hero h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    .lesson-meta-hero {
+        display: flex;
+        gap: 25px;
+        flex-wrap: wrap;
+    }
+    .lesson-meta-hero span {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .lesson-meta-hero i {
+        color: {% if course == 'data-analyse' %}#68d391{% else %}#fbbf24{% endif %};
+    }
+    
+    .lesson-container {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+    @media (max-width: 992px) {
+        .lesson-container {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .lesson-content-box {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .lesson-content-box h3 {
+        color: #2d3748;
+        font-size: 1.5rem;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .lesson-content-box h3:first-child {
+        margin-top: 0;
+    }
+    .lesson-content-box h4 {
+        color: #4a5568;
+        font-size: 1.2rem;
+        margin-top: 25px;
+        margin-bottom: 12px;
+    }
+    .lesson-content-box h5 {
+        color: #718096;
+        font-size: 1rem;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    .lesson-content-box p {
+        color: #4a5568;
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+    .lesson-content-box ul, .lesson-content-box ol {
+        margin-bottom: 20px;
+        padding-left: 25px;
+    }
+    .lesson-content-box li {
+        color: #4a5568;
+        line-height: 1.8;
+        margin-bottom: 8px;
+    }
+    .lesson-content-box table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    .lesson-content-box table th,
+    .lesson-content-box table td {
+        padding: 12px 15px;
+        border: 1px solid #e2e8f0;
+        text-align: left;
+    }
+    .lesson-content-box table th {
+        background: #f7fafc;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    .lesson-content-box table td {
+        color: #4a5568;
+    }
+    .lesson-content-box pre {
+        background: #1a202c;
+        color: #68d391;
+        padding: 20px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 20px 0;
+    }
+    .lesson-content-box code {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.9rem;
+    }
+    .lesson-tip {
+        background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%);
+        border-left: 4px solid #38b2ac;
+        padding: 20px;
+        border-radius: 0 8px 8px 0;
+        margin: 25px 0;
+    }
+    .lesson-tip strong {
+        color: #234e52;
+    }
+    
+    .sidebar-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .sidebar-card h4 {
+        color: #2d3748;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+    
+    .progress-indicator {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .progress-ring {
+        width: 60px;
+        height: 60px;
+        background: conic-gradient({% if course == 'data-analyse' %}#667eea{% else %}#ec4899{% endif %} calc(var(--progress) * 3.6deg), #e2e8f0 0);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .progress-ring-inner {
+        width: 48px;
+        height: 48px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #2d3748;
+    }
+    .progress-text span {
+        display: block;
+        color: #718096;
+        font-size: 0.9rem;
+    }
+    .progress-text strong {
+        color: #2d3748;
+    }
+    
+    .nav-lessons {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .nav-lessons li {
+        margin-bottom: 10px;
+    }
+    .nav-lessons a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+        background: #f7fafc;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #4a5568;
+        transition: all 0.3s;
+    }
+    .nav-lessons a:hover {
+        background: #edf2f7;
+    }
+    .nav-lessons a.active {
+        background: {% if course == 'data-analyse' %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% else %}linear-gradient(135deg, #ec4899 0%, #f43f5e 100%){% endif %};
+        color: white;
+    }
+    .nav-lessons .lesson-num {
+        width: 28px;
+        height: 28px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .nav-lessons a:not(.active) .lesson-num {
+        background: #e2e8f0;
+        color: #718096;
+    }
+    
+    .rating-box {
+        text-align: center;
+    }
+    .rating-stars {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+    .rating-stars i {
+        font-size: 1.8rem;
+        color: #e2e8f0;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .rating-stars i:hover,
+    .rating-stars i.active {
+        color: #fbbf24;
+    }
+    .rating-btn {
+        background: {% if course == 'data-analyse' %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% else %}linear-gradient(135deg, #ec4899 0%, #f43f5e 100%){% endif %};
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: opacity 0.3s;
+    }
+    .rating-btn:hover {
+        opacity: 0.9;
+    }
+    .rating-message {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        display: none;
+    }
+    .rating-message.success {
+        background: #c6f6d5;
+        color: #276749;
+        display: block;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+    .btn-quiz-big {
+        flex: 1;
+        background: {% if course == 'data-analyse' %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% else %}linear-gradient(135deg, #ec4899 0%, #f43f5e 100%){% endif %};
+        color: white;
+        border: none;
+        padding: 15px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        transition: opacity 0.3s;
+    }
+    .btn-quiz-big:hover {
+        opacity: 0.9;
+        color: white;
+    }
+    .btn-next {
+        flex: 1;
+        background: #f7fafc;
+        color: #2d3748;
+        border: 2px solid #e2e8f0;
+        padding: 15px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    .btn-next:hover {
+        background: #edf2f7;
+        border-color: #cbd5e0;
+    }
+</style>
+
+<div class="lesson-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('education.program') }}">Formations</a></li>
+                {% if course == 'data-analyse' %}
+                <li class="breadcrumb-item"><a href="{{ url_for('education.data_analyse') }}">Data & Analyse</a></li>
+                {% else %}
+                <li class="breadcrumb-item"><a href="{{ url_for('education.marketing_digital') }}">Marketing Digital</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active">Leçon {{ lesson.id }}</li>
+            </ol>
+        </nav>
+        
+        <h1><span class="badge bg-light text-dark me-2">{{ lesson.id }}/{{ total_lessons }}</span>{{ lesson.title }}</h1>
+        
+        <div class="lesson-meta-hero">
+            <span><i class="fas fa-clock"></i>{{ lesson.duration }}</span>
+            <span><i class="fas fa-signal"></i>{{ lesson.level }}</span>
+            <span><i class="fas fa-question-circle"></i>{{ lesson.quiz|length }} questions de quiz</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="lesson-container">
+        <div class="lesson-main">
+            <div class="lesson-content-box">
+                {{ lesson.content|safe }}
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{{ url_for('education.course_quiz', course=course, lesson_id=lesson.id) }}" class="btn-quiz-big">
+                    <i class="fas fa-tasks me-2"></i>Passer le Quiz
+                </a>
+                {% if lesson.id < total_lessons %}
+                <a href="{{ url_for('education.data_analyse_lesson' if course == 'data-analyse' else 'education.marketing_digital_lesson', lesson_id=lesson.id + 1) }}" class="btn-next">
+                    Leçon suivante <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <aside class="lesson-sidebar">
+            <div class="sidebar-card">
+                <h4><i class="fas fa-list-ol me-2"></i>Navigation</h4>
+                <ul class="nav-lessons">
+                    {% for i in range(1, total_lessons + 1) %}
+                    <li>
+                        {% if course == 'data-analyse' %}
+                        <a href="{{ url_for('education.data_analyse_lesson', lesson_id=i) }}" class="{% if i == lesson.id %}active{% endif %}">
+                        {% else %}
+                        <a href="{{ url_for('education.marketing_digital_lesson', lesson_id=i) }}" class="{% if i == lesson.id %}active{% endif %}">
+                        {% endif %}
+                            <span class="lesson-num">{{ i }}</span>
+                            <span>Leçon {{ i }}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="sidebar-card rating-box">
+                <h4><i class="fas fa-star me-2"></i>Noter cette leçon</h4>
+                <div class="rating-stars" id="ratingStars">
+                    <i class="far fa-star" data-rating="1"></i>
+                    <i class="far fa-star" data-rating="2"></i>
+                    <i class="far fa-star" data-rating="3"></i>
+                    <i class="far fa-star" data-rating="4"></i>
+                    <i class="far fa-star" data-rating="5"></i>
+                </div>
+                <button class="rating-btn" id="submitRating" disabled>
+                    <i class="fas fa-paper-plane me-1"></i>Envoyer
+                </button>
+                <div class="rating-message" id="ratingMessage"></div>
+            </div>
+            
+            <div class="sidebar-card">
+                <h4><i class="fas fa-lightbulb me-2"></i>Conseils</h4>
+                <ul style="padding-left: 20px; color: #4a5568; margin: 0;">
+                    <li>Prenez des notes pendant la lecture</li>
+                    <li>Relisez les points clés (💡)</li>
+                    <li>Passez le quiz pour valider vos acquis</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('#ratingStars i');
+    const submitBtn = document.getElementById('submitRating');
+    const message = document.getElementById('ratingMessage');
+    let selectedRating = 0;
+    
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = parseInt(this.dataset.rating);
+            updateStars(selectedRating);
+            submitBtn.disabled = false;
+        });
+        
+        star.addEventListener('mouseenter', function() {
+            const hoverRating = parseInt(this.dataset.rating);
+            updateStars(hoverRating);
+        });
+    });
+    
+    document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+        updateStars(selectedRating);
+    });
+    
+    function updateStars(rating) {
+        stars.forEach(star => {
+            const starRating = parseInt(star.dataset.rating);
+            if (starRating <= rating) {
+                star.classList.remove('far');
+                star.classList.add('fas', 'active');
+            } else {
+                star.classList.remove('fas', 'active');
+                star.classList.add('far');
+            }
+        });
+    }
+    
+    submitBtn.addEventListener('click', function() {
+        if (selectedRating === 0) return;
+        
+        fetch('{{ url_for("education.rate_lesson", course=course, lesson_id=lesson.id) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ rating: selectedRating })
+        })
+        .then(response => response.json())
+        .then(data => {
+            message.textContent = data.message;
+            message.classList.add('success');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-check me-1"></i>Merci !';
+        })
+        .catch(error => {
+            message.textContent = 'Erreur lors de l\'envoi';
+            message.style.background = '#fed7e2';
+            message.style.color = '#97266d';
+            message.style.display = 'block';
+        });
+    });
+});
+</script>
+{% endblock %}

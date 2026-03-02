@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+
+<button onclick="completeLesson('technologie', 'intro', 1)">
+    {{ 'Start' if is_en else 'Commencer' }}
+</button>
+<div class="container">
+  <h2>{{ 'Technology & Computer Science' if is_en else 'Technologie & Informatique' }}</h2>
+
+  {% for module in modules %}
+  <div class="card" id="{{ module.id }}">
+    <h3>{{ module.title }}</h3>
+
+    <div class="progress mb-12">
+      <div class="progress-bar" id="progress-{{ module.id }}" style="width:{{ module.current_level / module.lessons|length * 100 }}%;"></div>
+    </div>
+
+    {% for lesson in module.lessons %}
+    <div class="lesson card clickable" data-module="{{ module.id }}" data-index="{{ loop.index0 }}"
+         style="display: {% if loop.index0 <= module.current_level %}block{% else %}none{% endif %}; padding:12px; margin-bottom:8px;">
+      <h4>{{ lesson.title }}</h4>
+      <p>{{ lesson.content }}</p>
+      <pre class="lesson-example">{{ lesson.example }}</pre>
+
+      {% if lesson.quiz.type == "text" %}
+        <label>{{ 'Quiz:' if is_en else 'Quiz :' }}</label>
+        <input type="text" class="quiz-input" placeholder="{{ lesson.quiz.question }}">
+        <button class="check-btn">{{ 'Check' if is_en else 'Vérifier' }}</button>
+        <span class="feedback muted"></span>
+      {% elif lesson.quiz.type == "radio" %}
+        <label>{{ lesson.quiz.question }}</label>
+        {% for opt in lesson.quiz.options %}
+        <div>
+          <input type="radio" class="quiz-radio" name="quiz-{{ module.id }}-{{ loop.index0 }}" value="{{ opt }}" aria-label="{{ opt }}"> {{ opt }}
+        </div>
+        {% endfor %}
+        <button class="check-btn">{{ 'Check' if is_en else 'Vérifier' }}</button>
+        <span class="feedback muted"></span>
+      {% endif %}
+
+      <div class="mt-8">
+        {% if not loop.last %}
+        <button class="next-btn" data-module="{{ module.id }}">{{ 'Next' if is_en else 'Suivant' }}</button>
+        {% else %}
+        <span class="muted">{{ 'Module completed ✅' if is_en else 'Module terminé ✅' }}</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+// Gestion des leçons, barre, quiz et sauvegarde
+document.querySelectorAll(".next-btn").forEach(btn => {
+  btn.addEventListener("click", async e => {
+    const moduleId = btn.dataset.module;
+    const lessons = Array.from(document.querySelectorAll(`.lesson[data-module="${moduleId}"]`));
+    let currentIndex = lessons.findIndex(l => l.style.display === "block");
+
+    if(currentIndex >= 0 && currentIndex < lessons.length - 1){
+      lessons[currentIndex].style.display = "none";
+      lessons[currentIndex+1].style.display = "block";
+      const progress = Math.round((currentIndex+1)/lessons.length*100);
+      document.getElementById(`progress-${moduleId}`).style.width = progress + "%";
+
+      await fetch("/technologie/update_progress", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({module_id: moduleId, new_level: currentIndex+1})
+      });
+    }
+  });
+});
+
+// Quiz feedback
+document.querySelectorAll(".check-btn").forEach(btn => {
+  btn.addEventListener("click", e => {
+    const parent = btn.closest(".lesson");
+    const feedback = parent.querySelector(".feedback");
+    const moduleId = parent.dataset.module;
+    const index = parseInt(parent.dataset.index);
+    let correct = false;
+
+    // Radio
+    const radio = parent.querySelectorAll("input[type='radio']");
+    if(radio.length){
+      const selected = Array.from(radio).find(r => r.checked);
+      const answer = {{ modules|tojson }}.find(m=>m.id===moduleId).lessons[index].quiz.answer;
+      correct = selected && selected.value === answer;
+    }
+    // Text
+    const textInput = parent.querySelector("input.quiz-input");
+    if(textInput){
+      correct = textInput.value.trim().toLowerCase() === {{ modules|tojson }}.find(m=>m.id===moduleId).lessons[index].quiz.question.toLowerCase();
+    }
+
+    feedback.textContent = correct ? "{{ '✅ Correct' if is_en else '✅ Correct' }}" : "{{ '❌ Try again' if is_en else '❌ Essayez encore' }}";
+    feedback.style.color = correct ? "#2fd27a" : "#ff6b6b";
+  });
+});
+</script>
+
+{% endblock %}

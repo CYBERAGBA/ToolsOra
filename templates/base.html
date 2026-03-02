@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="{{ current_lang }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>ToolsOra</title>
+    <link rel="stylesheet" href="/static/css/styles.css?v=4">
+    <link rel="stylesheet" href="/static/css/edutools-ia.css?v=4">
+    <style>
+      /* FORCE: Tous les résultats doivent avoir un texte VISIBLE */
+      [id*="Result"] {
+        color: #333 !important;
+        background-color: #f5f5f5 !important;
+      }
+      [id*="Result"] h4, [id*="Result"] h3, [id*="Result"] h2 {
+        color: #007bff !important;
+      }
+      [id*="Result"] p, [id*="Result"] strong, [id*="Result"] span {
+        color: #333 !important;
+      }
+      [id*="Result"] div {
+        color: #333 !important;
+      }
+      [id*="Result"] table, [id*="Result"] tr, [id*="Result"] td {
+        color: #333 !important;
+        background-color: transparent !important;
+      }
+      /* Pour les card et liste */
+      .point-card, .slot-card, [class*="card"] {
+        color: #333 !important;
+      }
+    </style>
+  </head>
+ <body class="body-styled">
+    <header class="header-styled">
+  <div class="container">
+<!-- Robot IA en fond avec effet parallax -->
+  <img src="{{ url_for('static', filename='robot5.png') }}" 
+       alt="Robot IA" 
+       id="robot-bg"
+       class="robot-decoration"
+  />
+    <!-- Logo + Nom -->
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='logo1.png') }}"
+           alt="ToolsOra Logo"
+      >
+      <span class="logo-text">
+        Tools <span class="text-orange">Ora</span>
+      </span>
+    </div>
+
+    <!-- Menu -->
+    <nav class="nav-links">
+      <a href="/" class="nav-link">{{ 'Home' if is_en else 'Accueil' }}</a>
+      <a href="/modules/education/" class="nav-link">{{ 'Education' if is_en else 'Education' }}</a>
+      <a href="/modules/saas" class="nav-link">SaaS</a>
+      <a href="/modules/automation/" class="nav-link">{{ 'Automation' if is_en else 'Automatisation' }}</a>
+      
+      {% if current_user.is_authenticated and current_user.is_admin_user() %}
+        <a href="/admin/dashboard" class="nav-link" style="color: #ff9500; font-weight: bold;">⚙️ {{ 'Admin' if is_en else 'Admin' }}</a>
+      {% endif %}
+      <a href="{{ url_for('main.set_language', lang='fr', next=request.path) }}" class="nav-link">FR</a>
+      <a href="{{ url_for('main.set_language', lang='en', next=request.path) }}" class="nav-link">EN</a>
+    </nav>
+
+  </div>
+</header>
+    <main class="container">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class="flashes">
+          {% for m in messages %}
+            <li>{{ m }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <div class="container">© ToolsOra</div>
+    </footer>
+    <div id="toasts" aria-live="polite" aria-atomic="true"></div>
+    
+    <!-- EduTools-IA Floating Button -->
+    <div id="edutools-ia-button">
+      <div class="ia-button-container">
+        <div class="ia-button-pulse"></div>
+        <button class="ia-button" title="EduTools-IA - Votre co-pilote intelligent">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"></circle>
+            <path d="M12 1v6m0 6v6"></path>
+            <path d="M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24"></path>
+            <path d="M1 12h6m6 0h6"></path>
+            <path d="M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24"></path>
+          </svg>
+        </button>
+        <span class="ia-label">EduTools-IA</span>
+      </div>
+    </div>
+    
+    <script src="/static/js/app.js?v=4" defer></script>
+    <script src="/static/js/edutools-ia.js?v=4" defer></script>
+
+    <!-- JS Parallax pour robot -->
+<script>
+  window.addEventListener('scroll', () => {
+    const robot = document.getElementById('robot-bg');
+    if (robot) {
+      const offset = window.scrollY * 0.3; // effet plus marqué
+      robot.style.transform = `translateY(calc(-50% + ${offset}px))`;
+    }
+  });
+</script>
+
+  </body>
+</html>

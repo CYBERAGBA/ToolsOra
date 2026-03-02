@@ -1,0 +1,15 @@
+# Traductions pour le français
+msgid "Hello"
+msgstr "Bonjour"
+
+msgid "Welcome"
+msgstr "Bienvenue"
+
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Home"
+msgstr "Accueil"

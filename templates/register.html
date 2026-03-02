@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card auth-card">
+    <h2>{{ 'Register' if is_en else 'Inscription' }}</h2>
+    <p class="small muted">{{ 'Create an account to get started. Passwords must match.' if is_en else 'Créez un compte pour commencer. Les mots de passe doivent correspondre.' }}</p>
+    <form method="post" action="/auth/register" data-validate="register" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="username">{{ 'Username' if is_en else "Nom d'utilisateur" }}</label>
+      <input id="username" name="username" placeholder="{{ 'Your name' if is_en else 'Votre nom' }}" required aria-required="true">
+
+      <label for="email">Email</label>
+      <input id="email" type="email" name="email" placeholder="{{ 'you@example.com' if is_en else 'vous@exemple.com' }}" required aria-required="true">
+
+      <label for="password">{{ 'Password' if is_en else 'Mot de passe' }}</label>
+      <input id="password" type="password" name="password" placeholder="••••••••" required aria-required="true">
+
+      <label for="password2">{{ 'Confirm password' if is_en else 'Confirmer le mot de passe' }}</label>
+      <input id="password2" type="password" name="password2" placeholder="{{ 'Repeat password' if is_en else 'Répétez le mot de passe' }}" required aria-required="true">
+
+      <div class="auth-actions" style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button type="submit">{{ 'Sign up' if is_en else "S'inscrire" }}</button>
+        <a href="/auth/login" class="kbd">{{ 'I already have an account' if is_en else "J'ai déjà un compte" }}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

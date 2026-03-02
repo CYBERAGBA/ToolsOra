@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+  <h2>{{ 'Creativity & Design' if is_en else 'Créativité & Design' }}</h2>
+
+  {% for module in modules %}
+  <div class="card" id="{{ module.id }}">
+    <h3>{{ module.title }}</h3>
+
+    <div class="progress" style="background: var(--glass-2); border-radius:10px; margin-bottom:12px; height:12px;">
+      <div class="progress-bar" id="progress-{{ module.id }}" style="width:{{ module.current_level / module.lessons|length * 100 }}%; height:100%; background: var(--brand); border-radius:10px;"></div>
+    </div>
+
+    {% for lesson in module.lessons %}
+    <div class="lesson card clickable" data-module="{{ module.id }}" data-index="{{ loop.index0 }}"
+         style="display: {% if loop.index0 <= module.current_level %}block{% else %}none{% endif %}; padding:12px; margin-bottom:8px;">
+      <h4>{{ lesson.title }}</h4>
+      <p>{{ lesson.content }}</p>
+      <pre style="background:#071426;padding:8px;border-radius:6px;color:#ffb86b;">{{ lesson.example }}</pre>
+
+      {% if lesson.quiz.type == "text" %}
+        <label>{{ 'Quiz:' if is_en else 'Quiz :' }}</label>
+        <input type="text" class="quiz-input" placeholder="{{ lesson.quiz.question }}">
+        <button class="check-btn">{{ 'Check' if is_en else 'Vérifier' }}</button>
+        <span class="feedback muted"></span>
+      {% elif lesson.quiz.type == "radio" %}
+        <label>{{ lesson.quiz.question }}</label>
+        {% for opt in lesson.quiz.options %}
+        <div>
+          <input type="radio" name="quiz-{{ module.id }}-{{ loop.index0 }}" value="{{ opt }}"> {{ opt }}
+        </div>
+        {% endfor %}
+        <button class="check-btn">{{ 'Check' if is_en else 'Vérifier' }}</button>
+        <span class="feedback muted"></span>
+      {% endif %}
+
+      <div style="margin-top:8px;">
+        {% if not loop.last %}
+        <button class="next-btn" data-module="{{ module.id }}">{{ 'Next' if is_en else 'Suivant' }}</button>
+        {% else %}
+        <span class="muted">{{ 'Module completed ✅' if is_en else 'Module terminé ✅' }}</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+document.querySelectorAll(".next-btn").forEach(btn => {
+  btn.addEventListener("click", async e => {
+    const moduleId = btn.dataset.module;
+    const lessons = Array.from(document.querySelectorAll(`.lesson[data-module="${moduleId}"]`));
+    let currentIndex = lessons.findIndex(l => l.style.display === "block");
+    if(currentIndex >= 0 && currentIndex < lessons.length - 1){
+      lessons[currentIndex].style.display = "none";
+      lessons[currentIndex+1].style.display = "block";
+      const progress = Math.round((currentIndex+1)/lessons.length*100);
+      document.getElementById(`progress-${moduleId}`).style.width = progress + "%";
+
+      await fetch("/modules/creativity/update_progress", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({module_id: moduleId, new_level: currentIndex+1})
+      });
+    }
+  });
+});
+
+// Quiz feedback
+document.querySelectorAll(".check-btn").forEach(btn => {
+  btn.addEventListener("click", e => {
+    const parent = btn.closest(".lesson");
+    const feedback = parent.querySelector(".feedback");
+    const moduleId = parent.dataset.module;
+    const index = parseInt(parent.dataset.index);
+    let correct = false;
+
+    const radio = parent.querySelectorAll("input[type='radio']");
+    if(radio.length){
+      const selected = Array.from(radio).find(r => r.checked);
+      const answer = {{ modules|tojson }}.find(m=>m.id===moduleId).lessons[index].quiz.answer;
+      correct = selected && selected.value === answer;
+    }
+
+    const textInput = parent.querySelector("input.quiz-input");
+    if(textInput){
+      correct = textInput.value.trim() !== "";
+    }
+
+    feedback.textContent = correct ? "{{ '✅ Correct' if is_en else '✅ Correct' }}" : "{{ '❌ Try again' if is_en else '❌ Essayez encore' }}";
+    feedback.style.color = correct ? "#2fd27a" : "#ff6b6b";
+  });
+});
+</script>
+
+{% endblock %}

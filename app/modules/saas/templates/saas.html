@@ -1,0 +1,384 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card">
+    <h2 style="text-align: center;">{{ '🌍 Currency Converter + SaaS Tools' if is_en else '🌍 Convertisseur de Devise + Outils SaaS' }}</h2>
+    <p class="small muted" style="text-align: center;">{{ 'Quickly convert currencies and PDF documents, generate CVs, QR codes, and more!' if is_en else 'Convertissez rapidement vos devises, PDF documents, générez des CVs, codes QR et plus encore!' }}</p>
+
+    <div class="saas-tools" style="margin-top:12px">
+      <div class="saas-tool" id="tool-currency">
+        <div class="badge">⭐</div>
+        <h4>{{ 'Currency Converter' if is_en else 'Convertisseur de Devise' }}</h4>
+        <p>{{ 'Convert instantly between 200+ currencies with live rates.' if is_en else 'Convertissez instantanément entre 200+ devises avec les taux en direct.' }}</p>
+        <div style="margin-top:8px"><a href="/modules/saas/currency-converter">{{ 'Open converter' if is_en else 'Ouvrir le convertisseur' }}</a></div>
+      </div>
+      <div class="saas-tool" id="tool-1">
+        <div class="badge">1</div>
+        <h4>{{ 'File conversion' if is_en else 'Conversion de fichiers' }}</h4>
+        <p>{{ 'PDF ↔ DOCX — upload and server-side conversion.' if is_en else 'PDF ↔ DOCX — upload et conversion serveur.' }}</p>
+        <div style="margin-top:8px"><a href="#converter-form">{{ 'Open' if is_en else 'Ouvrir' }}</a></div>
+      </div>
+      <div class="saas-tool" id="tool-2">
+        <div class="badge">2</div>
+        <h4>{{ 'QR Generator' if is_en else 'Générateur de QR' }}</h4>
+        <p>{{ 'Create a QR code from the provided information.' if is_en else 'Créez un QR code à partir des informations fournies.' }}</p>
+        <div style="margin-top:8px"><a href="#qr-section">{{ 'Open' if is_en else 'Ouvrir' }}</a></div>
+      </div>
+      <div class="saas-tool" id="tool-3">
+        <div class="badge">3</div>
+        <h4>{{ 'CV Generator' if is_en else 'Générateur de CV' }}</h4>
+        <p>{{ 'Generate a professional CV (DOCX) from a profile.' if is_en else 'Générez un CV professionnel (DOCX) depuis un profil.' }}</p>
+        <div style="margin-top:8px"><a href="#cv-section">{{ 'Open' if is_en else 'Ouvrir' }}</a></div>
+      </div>
+      <div class="saas-tool" id="tool-4">
+        <div class="badge">4</div>
+        <h4>{{ 'Specialized calculator' if is_en else 'Calculateur spécialisé' }}</h4>
+        <p>{{ 'Loan, BMI and other useful calculations.' if is_en else 'Prêt, BMI et autres calculs utiles.' }}</p>
+        <div style="margin-top:8px"><a href="#calc-section">{{ 'Open' if is_en else 'Ouvrir' }}</a></div>
+      </div>
+    </div>
+
+    <!-- ========== CONVERTISSEUR DE DEVISES ========== -->
+    <section class="card" style="margin-top:18px" id="currency-section">
+      <h3>{{ '🌍 Currency Converter' if is_en else '🌍 Convertisseur de Devise' }}</h3>
+      <p class="small muted">{{ 'Convert instantly between 200+ currencies with current rates.' if is_en else 'Convertissez instantanément entre 200+ devises avec les taux actuels.' }}</p>
+      
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:15px;margin:15px 0;">
+        <!-- Input -->
+        <div style="background:#f8f8f8;padding:15px;border-radius:12px;">
+          <label style="font-size:12px;font-weight:600;color:#555;">{{ 'Amount to convert' if is_en else 'Montant à convertir' }}</label>
+          <input id="currencyAmount" type="number" value="100" min="0" style="width:100%;padding:10px;margin-top:8px;border:2px solid #e0e0e0;border-radius:8px;">
+          <select id="currencyFrom" style="width:100%;padding:10px;margin-top:8px;border:2px solid #e0e0e0;border-radius:8px;">
+            <option value="EUR">€ EUR - Euro</option>
+            <option value="USD">$ USD - Dollar US</option>
+            <option value="GBP">£ GBP - Livre Sterling</option>
+            <option value="JPY">¥ JPY - Yen Japonais</option>
+            <option value="CHF">CHF - Franc Suisse</option>
+            <option value="CAD">$ CAD - Dollar Canadien</option>
+            <option value="AUD">$ AUD - Dollar Australien</option>
+            <option value="CNY">¥ CNY - Yuan</option>
+            <option value="INR">₹ INR - Roupie</option>
+            <option value="BRL">R$ BRL - Real</option>
+          </select>
+        </div>
+
+        <!-- Swap Button -->
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <button id="currencySwap" style="width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;cursor:pointer;font-size:18px;">⇄</button>
+        </div>
+
+        <!-- Output -->
+        <div style="background:#f8f8f8;padding:15px;border-radius:12px;">
+          <label style="font-size:12px;font-weight:600;color:#555;">{{ 'Converted amount' if is_en else 'Montant converti' }}</label>
+          <input id="currencyResult" type="number" readonly style="width:100%;padding:10px;margin-top:8px;background:white;border:2px solid #e0e0e0;border-radius:8px;">
+          <select id="currencyTo" style="width:100%;padding:10px;margin-top:8px;border:2px solid #e0e0e0;border-radius:8px;">
+            <option value="USD" selected>$ USD - Dollar US</option>
+            <option value="EUR">€ EUR - Euro</option>
+            <option value="GBP">£ GBP - Livre Sterling</option>
+            <option value="JPY">¥ JPY - Yen Japonais</option>
+            <option value="CHF">CHF - Franc Suisse</option>
+            <option value="CAD">$ CAD - Dollar Canadien</option>
+            <option value="AUD">$ AUD - Dollar Australien</option>
+            <option value="CNY">¥ CNY - Yuan</option>
+            <option value="INR">₹ INR - Roupie</option>
+            <option value="BRL">R$ BRL - Real</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="background:#f0f7ff;padding:12px;border-left:4px solid #667eea;border-radius:6px;">
+        <p id="currencyRate" class="small muted" style="margin:0;">{{ 'Exchange rate: Loading...' if is_en else 'Taux de change: Chargement...' }}</p>
+      </div>
+    </section>
+
+    <form id="converter-form" enctype="multipart/form-data">
+      <label for="file">{{ 'File' if is_en else 'Fichier' }}</label>
+      <div id="drop-area" class="card" style="padding:12px;border-style:dashed;border-width:1px">
+        <input id="file" name="file" type="file" accept=".pdf,.doc,.docx" required />
+        <div class="small muted">{{ 'Drag and drop a file here or click to select.' if is_en else 'Glissez-déposez un fichier ici ou cliquez pour sélectionner.' }}</div>
+      </div>
+
+      <label for="direction">{{ 'Conversion' if is_en else 'Conversion' }}</label>
+      <select id="direction" name="direction">
+        <option value="pdf-to-docx">PDF → DOCX</option>
+        <option value="docx-to-pdf">DOCX → PDF</option>
+      </select>
+
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button type="submit">{{ 'Convert' if is_en else 'Convertir' }}</button>
+        <button type="button" id="clear-convert" class="kbd">{{ 'Clear' if is_en else 'Effacer' }}</button>
+      </div>
+    </form>
+
+    <div id="convert-result" style="margin-top:12px"></div>
+
+    <div style="margin-top:18px">
+      <h4>{{ 'Conversion history' if is_en else 'Historique des conversions' }}</h4>
+      <div id="conversion-history" class="small muted">{{ 'Loading...' if is_en else 'Chargement...' }}</div>
+    </div>
+  
+  <section class="card" style="margin-top:18px">
+    <h3>PDF Tools</h3>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:260px">
+        <h4>{{ 'Merge PDFs' if is_en else 'Fusionner des PDFs' }}</h4>
+        <form id="merge-form" enctype="multipart/form-data">
+          <input name="files" type="file" multiple accept="application/pdf" required />
+          <div style="margin-top:8px"><button type="submit">{{ 'Merge' if is_en else 'Fusionner' }}</button></div>
+        </form>
+        <div id="merge-result" class="small muted" style="margin-top:8px"></div>
+      </div>
+
+      <div style="flex:1;min-width:260px">
+        <h4>{{ 'Split PDF (per page)' if is_en else 'Diviser un PDF (par page)' }}</h4>
+        <form id="split-form" enctype="multipart/form-data">
+          <input id="split-file" name="file" type="file" accept="application/pdf" required />
+          <div style="margin-top:8px"><button type="submit">{{ 'Split' if is_en else 'Diviser' }}</button></div>
+        </form>
+        <div id="split-result" class="small muted" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </section>
+  </div>
+  <section class="card" style="margin-top:18px" id="qr-section">
+    <h3>{{ 'Code generator' if is_en else 'Générateur de code' }}</h3>
+    <p class="small muted">{{ 'Create a simple code file from provided instructions.' if is_en else 'Créez un fichier de code simple à partir d\'informations fournies.' }}</p>
+    <form id="code-gen-form">
+      <label for="code-name">{{ 'File name' if is_en else 'Nom du fichier' }}</label>
+      <input id="code-name" name="name" placeholder="mon_script" />
+
+      <label for="code-language">{{ 'Language' if is_en else 'Langage' }}</label>
+      <select id="code-language" name="language">
+        <option value="python">Python</option>
+        <option value="javascript">JavaScript</option>
+        <option value="html">HTML</option>
+      </select>
+
+      <label for="code-desc">{{ 'Description / instructions' if is_en else 'Description / instructions' }}</label>
+      <textarea id="code-desc" name="description" placeholder="{{ 'What the code should do...' if is_en else 'Ce que doit faire le code...' }}"></textarea>
+
+      <div style="margin-top:12px"><button type="submit">{{ 'Generate' if is_en else 'Générer' }}</button></div>
+    </form>
+    <div id="code-gen-result" class="small muted" style="margin-top:8px"></div>
+  </section>
+  
+  <section class="card" style="margin-top:18px" id="qr-section-form">
+    <h3>{{ 'QR generator' if is_en else 'Générateur de QR' }}</h3>
+    <p class="small muted">{{ 'Enter a text.' if is_en else 'Entrez un texte.' }}</p>
+    <form id="qr-form">
+      <label for="qr-text">{{ 'Website - email - name - ...' if is_en else 'Site internet - email - nom - ...' }}</label>
+      <input id="qr-text" name="text" placeholder="{{ 'https://example.com or name, email' if is_en else 'https://example.com ou nom, email' }}" />
+      <div style="margin-top:12px"><button type="submit">{{ 'Generate QR' if is_en else 'Générer QR' }}</button></div>
+    </form>
+    <div id="qr-result" class="small muted" style="margin-top:8px"></div>
+  </section>
+
+  <section class="card" style="margin-top:18px" id="cv-section">
+    <h3>{{ 'Professional CV generator' if is_en else 'Générateur de CV professionnel' }}</h3>
+    <p class="small muted">{{ 'Fill the basic profile and download a professional DOCX.' if is_en else 'Remplissez le profil simple et téléchargez un DOCX professionnel.' }}</p>
+    <form id="cv-form">
+      <label for="cv-name">{{ 'Name' if is_en else 'Nom' }}</label>
+      <input id="cv-name" name="name" />
+      <label for="cv-title">{{ 'Title' if is_en else 'Titre' }}</label>
+      <input id="cv-title" name="title" />
+      <label for="cv-contact">{{ 'Contact' if is_en else 'Contact' }}</label>
+      <input id="cv-contact" name="contact" />
+      <label for="cv-photo">{{ 'Profile photo (optional)' if is_en else "Photo d'identité (optionnelle)" }}</label>
+      <input id="cv-photo" name="photo" type="file" accept="image/*" />
+      <label for="cv-summary">{{ 'Summary' if is_en else 'Résumé' }}</label>
+      <textarea id="cv-summary" name="summary"></textarea>
+      <label for="cv-skills">{{ 'Skills (comma-separated)' if is_en else 'Compétences (séparées par virgule)' }}</label>
+      <input id="cv-skills" name="skills" placeholder="{{ 'Python, SQL, Management' if is_en else 'Python, SQL, Gestion' }}" />
+      <div style="margin-top:12px"><button type="submit">{{ 'Generate CV' if is_en else 'Générer CV' }}</button></div>
+    </form>
+    <div id="cv-result" class="small muted" style="margin-top:8px"></div>
+  </section>
+
+  <section class="card" style="margin-top:18px" id="calc-section">
+    <h3>{{ 'Specialized calculator' if is_en else 'Calculateur spécialisé' }}</h3>
+    <p class="small muted">{{ 'Choose a calculation: loan or BMI.' if is_en else 'Choisissez un calcul: prêt (loan) ou BMI.' }}</p>
+    <form id="calc-form">
+      <label for="calc-type">{{ 'Type' if is_en else 'Type' }}</label>
+      <select id="calc-type" name="type">
+        <option value="loan">{{ 'Loan (monthly payment)' if is_en else 'Loan (mensualité)' }}</option>
+        <option value="bmi">BMI</option>
+      </select>
+      <div id="loan-fields" style="margin-top:8px">
+        <label>{{ 'Principal amount' if is_en else 'Montant principal' }}</label>
+        <input id="loan-principal" name="principal" placeholder="10000" />
+        <label>{{ 'Annual rate (%)' if is_en else 'Taux annuel (%)' }}</label>
+        <input id="loan-rate" name="annual_rate" placeholder="5" />
+        <label>{{ 'Duration (years)' if is_en else 'Durée (années)' }}</label>
+        <input id="loan-years" name="years" placeholder="3" />
+      </div>
+      <div id="bmi-fields" style="margin-top:8px;display:none">
+        <label>{{ 'Weight (kg)' if is_en else 'Poids (kg)' }}</label>
+        <input id="bmi-weight" name="weight_kg" placeholder="70" />
+        <label>{{ 'Height (cm)' if is_en else 'Taille (cm)' }}</label>
+        <input id="bmi-height" name="height_cm" placeholder="175" />
+      </div>
+      <div style="margin-top:12px"><button type="submit">{{ 'Calculate' if is_en else 'Calculer' }}</button></div>
+    </form>
+    <div id="calc-result" class="small muted" style="margin-top:8px"></div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    const isEnglish = {{ 'true' if is_en else 'false' }};
+    document.getElementById('code-gen-form').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const name = document.getElementById('code-name').value || 'generated';
+      const language = document.getElementById('code-language').value;
+      const description = document.getElementById('code-desc').value || '';
+      const resEl = document.getElementById('code-gen-result');
+      resEl.textContent = isEnglish ? 'Generating...' : 'Génération en cours...';
+      try{
+        const resp = await fetch('/modules/saas/code/generate', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({name, language, description})
+        });
+        const data = await resp.json();
+        if(data.generated){
+          resEl.innerHTML = isEnglish ? `Generated file: <a href="${data.download}" target="_blank">${data.output}</a>` : `Fichier généré: <a href="${data.download}" target="_blank">${data.output}</a>`;
+        } else {
+          resEl.textContent = (isEnglish ? 'Error: ' : 'Erreur: ') + (data.error || JSON.stringify(data));
+        }
+      } catch(err){
+        resEl.textContent = (isEnglish ? 'Network error: ' : 'Erreur réseau: ') + err.message;
+      }
+    });
+    // QR generator
+    document.getElementById('qr-form').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const text = document.getElementById('qr-text').value.trim();
+      const resEl = document.getElementById('qr-result');
+      if(!text){ resEl.textContent = isEnglish ? 'QR text is required.' : 'Le texte pour le QR est requis.'; document.getElementById('qr-text').focus(); return }
+      resEl.textContent = isEnglish ? 'Generating...' : 'Génération en cours...';
+      try{
+        const resp = await fetch('/modules/saas/qr/generate', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({text})});
+        const data = await resp.json();
+        if(!resp.ok){ resEl.textContent = (isEnglish ? 'Error: ' : 'Erreur: ') + (data.error||JSON.stringify(data)); return }
+        if(data.generated){
+          resEl.innerHTML = isEnglish
+            ? `QR generated: <a href="${data.download}" target="_blank">${data.output}</a><div style="margin-top:8px"><img src="${data.data_uri}" alt="QR" style="max-width:220px;border-radius:8px;border:1px solid rgba(255,255,255,.04)"/></div>`
+            : `QR généré: <a href="${data.download}" target="_blank">${data.output}</a><div style="margin-top:8px"><img src="${data.data_uri}" alt="QR" style="max-width:220px;border-radius:8px;border:1px solid rgba(255,255,255,.04)"/></div>`;
+        } else resEl.textContent = (isEnglish ? 'Error: ' : 'Erreur: ') + (data.error||JSON.stringify(data));
+      }catch(err){resEl.textContent = (isEnglish ? 'Network error: ' : 'Erreur réseau: ') + err.message}
+    });
+
+    // CV generator
+    document.getElementById('cv-form').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const name = document.getElementById('cv-name').value.trim();
+      const title = document.getElementById('cv-title').value.trim();
+      const contact = document.getElementById('cv-contact').value.trim();
+      const summary = document.getElementById('cv-summary').value.trim();
+      const skills = (document.getElementById('cv-skills').value || '').split(',').map(s=>s.trim()).filter(Boolean);
+      const photoInput = document.getElementById('cv-photo');
+      const resEl = document.getElementById('cv-result');
+      // client validation
+      if(!name){ resEl.textContent = 'Le nom est requis.'; document.getElementById('cv-name').focus(); return }
+      resEl.textContent = 'Génération en cours...';
+      try{
+        const form = new FormData();
+        form.append('name', name);
+        form.append('title', title);
+        form.append('contact', contact);
+        form.append('summary', summary);
+        form.append('skills', JSON.stringify(skills));
+        if(photoInput && photoInput.files && photoInput.files.length>0){
+          form.append('photo', photoInput.files[0]);
+        }
+        const resp = await fetch('/modules/saas/cv/professional', {method:'POST', body: form});
+        const data = await resp.json();
+        if(!resp.ok){ resEl.textContent = 'Erreur: '+(data.error||JSON.stringify(data)); return }
+        let html = '';
+        if(data.docx) html += `DOCX: <a href="${data.download_docx}" target="_blank">${data.docx}</a>`;
+        if(data.pdf) html += `<br/>PDF: <a href="${data.download_pdf}" target="_blank">${data.pdf}</a>`;
+        if(html) resEl.innerHTML = 'CV généré: ' + html;
+        else resEl.textContent = 'CV généré (formats indisponibles)';
+      }catch(err){resEl.textContent = 'Erreur réseau: '+err.message}
+    });
+
+    // Calculator UI
+    const calcType = document.getElementById('calc-type');
+    calcType.addEventListener('change', function(){
+      const t = this.value;
+      document.getElementById('loan-fields').style.display = (t==='loan')? 'block':'none';
+      document.getElementById('bmi-fields').style.display = (t==='bmi')? 'block':'none';
+    });
+    document.getElementById('calc-form').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const t = document.getElementById('calc-type').value;
+      const resEl = document.getElementById('calc-result');
+      // client-side validation
+      let body = {type: t};
+      if(t==='loan'){
+        const principal = parseFloat(document.getElementById('loan-principal').value);
+        const rate = parseFloat(document.getElementById('loan-rate').value);
+        const years = parseFloat(document.getElementById('loan-years').value);
+        if(isNaN(principal) || principal<=0){ resEl.textContent='Montant invalide.'; return }
+        if(isNaN(years) || years<=0){ resEl.textContent='Durée invalide.'; return }
+        body.principal = principal; body.annual_rate = isNaN(rate)?0:rate; body.years = years;
+      } else {
+        const weight = parseFloat(document.getElementById('bmi-weight').value);
+        const height = parseFloat(document.getElementById('bmi-height').value);
+        if(isNaN(weight) || weight<=0){ resEl.textContent='Poids invalide.'; return }
+        if(isNaN(height) || height<=0){ resEl.textContent='Taille invalide.'; return }
+        body.weight_kg = weight; body.height_cm = height;
+      }
+      resEl.textContent = 'Calcul en cours...';
+      try{
+        const resp = await fetch('/modules/saas/calculator/calc', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+        const data = await resp.json();
+        if(!resp.ok) resEl.textContent = 'Erreur: '+(data.error||JSON.stringify(data));
+        else {
+          if(data.type==='loan') resEl.textContent = `Mensualité: ${data.monthly_payment} (${data.periods} périodes)`;
+          else if(data.type==='bmi') resEl.textContent = `BMI: ${data.bmi}`;
+          else resEl.textContent = JSON.stringify(data);
+        }
+      }catch(err){resEl.textContent = 'Erreur réseau: '+err.message}
+    });
+
+    // ========== CONVERTISSEUR DE DEVISES ==========
+    const exchangeRates = {
+      EUR: 1.0, USD: 1.12, GBP: 0.86, JPY: 150.5, CHF: 0.98,
+      CAD: 1.48, AUD: 1.68, CNY: 8.2, INR: 93.5, BRL: 5.6
+    };
+
+    function convertCurrency() {
+      const amount = parseFloat(document.getElementById('currencyAmount').value) || 0;
+      const from = document.getElementById('currencyFrom').value;
+      const to = document.getElementById('currencyTo').value;
+      
+      if (amount === 0) {
+        document.getElementById('currencyResult').value = '0';
+        return;
+      }
+
+      const fromRate = exchangeRates[from] || 1;
+      const toRate = exchangeRates[to] || 1;
+      const result = (amount / fromRate) * toRate;
+
+      document.getElementById('currencyResult').value = result.toFixed(2);
+      const rate = (toRate / fromRate).toFixed(4);
+      document.getElementById('currencyRate').textContent = 
+        `📊 Taux de change : 1 ${from} = ${rate} ${to}`;
+    }
+
+    document.getElementById('currencyAmount').addEventListener('input', convertCurrency);
+    document.getElementById('currencyFrom').addEventListener('change', convertCurrency);
+    document.getElementById('currencyTo').addEventListener('change', convertCurrency);
+
+    document.getElementById('currencySwap').addEventListener('click', () => {
+      const from = document.getElementById('currencyFrom').value;
+      const to = document.getElementById('currencyTo').value;
+      document.getElementById('currencyFrom').value = to;
+      document.getElementById('currencyTo').value = from;
+      convertCurrency();
+    });
+
+    // Conversion initiale
+    convertCurrency();
+  </script>
+{% endblock %}

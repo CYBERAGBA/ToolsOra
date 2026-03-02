@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .btn-premium {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: opacity 0.3s;
+    margin-right: 10px;
+  }
+  .btn-premium:hover {
+    opacity: 0.9;
+    color: white;
+  }
+  .btn-premium i {
+    color: #fbbf24;
+  }
+  .badge-lessons {
+    background: #c6f6d5;
+    color: #276749;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .saas-tool {
+    position: relative;
+  }
+  .saas-tool .mt-8 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
+<div class="card">
+  <h2>{{ 'Training Program — Education' if is_en else 'Programme de formation — Education' }}</h2>
+  <p class="small muted">
+    {{ 'Modular, progressive, project-oriented paths covering Technology, Data, Marketing, Soft Skills, Languages/Design.' if is_en else 'Parcours modulaires, progressifs et orientés projets couvrant Technologie, Data, Marketing, Soft Skills, Langues/Design.' }}
+  </p>
+
+  <div class="saas-tools saas-tools-section">
+
+    <!-- Technologie & Informatique -->
+    <div class="saas-tool" id="edu-1">
+      <div class="badge">1</div>
+      <h4>{{ 'Technology & Computer Science' if is_en else 'Technologie & Informatique' }}</h4>
+      <p>{{ 'AI, web development, cybersecurity, cloud — Beginner→Advanced path.' if is_en else 'IA, dev web, cybersécurité, cloud — parcours Débutant→Avancé.' }}</p>
+      <div class="mt-8">
+        <a href="{{ url_for('technologie.technologie') }}">{{ 'View lesson' if is_en else 'Voir la leçon' }}</a>
+      </div>
+    </div>
+
+    <!-- Data & Analyse -->
+    <div class="saas-tool" id="edu-2">
+      <div class="badge">2</div>
+      <h4>{{ 'Data & Analytics' if is_en else 'Data & Analyse' }}</h4>
+      <p>{{ 'Data cleaning, visualization, statistics, Python — Complete course!' if is_en else 'Nettoyage, visualisation, statistiques, Python — Cours complet !' }}</p>
+      <div class="mt-8">
+        <a href="{{ url_for('education.data_analyse') }}" class="btn-premium">
+          <i class="fas fa-crown"></i> {{ 'Access course' if is_en else 'Accéder au cours' }}
+        </a>
+        <span class="badge-lessons">4 {{ 'lessons' if is_en else 'leçons' }}</span>
+      </div>
+    </div>
+
+    <!-- Marketing digital -->
+    <div class="saas-tool" id="edu-3">
+      <div class="badge">3</div>
+      <h4>{{ 'Digital Marketing' if is_en else 'Marketing digital' }}</h4>
+      <p>{{ 'SEO, Google Ads, Social Media, Analytics — Full formation!' if is_en else 'SEO, Google Ads, Réseaux sociaux, Analytics — Formation complète !' }}</p>
+      <div class="mt-8">
+        <a href="{{ url_for('education.marketing_digital') }}" class="btn-premium">
+          <i class="fas fa-crown"></i> {{ 'Access course' if is_en else 'Accéder au cours' }}
+        </a>
+        <span class="badge-lessons">5 {{ 'lessons' if is_en else 'leçons' }}</span>
+      </div>
+    </div>
+
+    <!-- Business -->
+    <div class="saas-tool" id="edu-4">
+      <div class="badge">4</div>
+      <h4>Business Management</h4>
+      <p>{{ 'Leadership, strategy and project management.' if is_en else 'Leadership, stratégie et gestion de projets.' }}</p>
+      <div class="mt-8">
+        <a href="{{ url_for('business.business_index') }}">{{ 'View lesson' if is_en else 'Voir la leçon' }}</a>
+      </div>
+    </div>
+
+    <!-- Langues / Design -->
+    <div class="saas-tool" id="edu-5">
+      <div class="badge">5</div>
+      <h4>{{ 'Languages / Design' if is_en else 'Langues / Design' }}</h4>
+      <p>{{ 'Languages & UX/UI option — choose your specialization.' if is_en else 'Option langues & UX/UI — choisissez votre spécialité.' }}</p>
+      <div class="mt-8">
+        <a href="{{ url_for('creativity.creativity_index') }}">{{ 'View lesson' if is_en else 'Voir la leçon' }}</a>
+      </div>
+    </div>
+
+  </div>
+
+  <section id="domains" class="domain-section">
+    <h3>{{ 'Structure & progression' if is_en else 'Structure & progression' }}</h3>
+    <p>
+      {{ 'Each domain offers 3 levels (Beginner / Intermediate / Advanced), with micro-lessons, workshops, quizzes, and a capstone project.' if is_en else 'Chaque domaine propose 3 niveaux (Débutant / Intermédiaire / Avancé), avec micro-leçons, ateliers, quizzes et projet capstone.' }}
+    </p>
+    <div class="domain-list">
+      <a class="kbd" href="{{ url_for('education.lessons') }}">{{ 'Access lessons' if is_en else 'Accéder aux leçons' }}</a>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

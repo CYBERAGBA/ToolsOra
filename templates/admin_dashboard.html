@@ -1,0 +1,497 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.admin-header {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #ff9500, #ff6b6b);
+  color: white;
+  border-radius: 8px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #ff9500;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ff9500;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+  text-transform: uppercase;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: #999;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab-button.active {
+  color: #ff9500;
+  border-bottom-color: #ff9500;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.payment-item, .subscription-item, .user-item {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border-left: 3px solid #ff9500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.item-title {
+  font-weight: bold;
+  color: #333;
+}
+
+.item-status {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.status-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.item-details {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: #999;
+  margin-right: 5px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.btn-confirm {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.btn-confirm:hover {
+  background: #c6f6d5;
+}
+
+.btn-reject {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.btn-reject:hover {
+  background: #fecaca;
+}
+
+.btn-info {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.btn-info:hover {
+  background: #bfdbfe;
+}
+
+.form-group {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.form-group input, .form-group textarea {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.form-group textarea {
+  min-height: 40px;
+  resize: vertical;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.user-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.user-badge.admin {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.user-badge.premium {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+</style>
+
+<div class="admin-header">
+  <h1>⚙️ {{ 'Administration Panel' if is_en else 'Panneau d\'Administration' }}</h1>
+  <p>{{ 'Manage subscriptions, payments, and users' if is_en else 'Gérez les abonnements, les paiements et les utilisateurs' }}</p>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-number">{{ total_users }}</div>
+    <div class="stat-label">{{ 'Total Users' if is_en else 'Utilisateurs totaux' }}</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-number">{{ total_subscriptions }}</div>
+    <div class="stat-label">{{ 'Total Subscriptions' if is_en else 'Abonnements totaux' }}</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-number">{{ active_subscriptions_count }}</div>
+    <div class="stat-label">{{ 'Active Subscriptions' if is_en else 'Abonnements actifs' }}</div>
+  </div>
+  
+  <div class="stat-card" style="border-left-color: #ef4444;">
+    <div class="stat-number" style="color: #ef4444;">{{ pending_subscriptions_count }}</div>
+    <div class="stat-label">{{ 'Pending Validation' if is_en else 'En attente de validation' }}</div>
+  </div>
+  
+  <div class="stat-card" style="border-left-color: #f59e0b;">
+    <div class="stat-number" style="color: #f59e0b;">{{ pending_payments_count }}</div>
+    <div class="stat-label">{{ 'Pending Payments' if is_en else 'Paiements en attente' }}</div>
+  </div>
+</div>
+
+<!-- Tabs Navigation -->
+<div class="tabs">
+  <button class="tab-button active" onclick="switchTab(event, 'payments')">
+    💳 {{ 'Payments' if is_en else 'Paiements' }} ({{ pending_payments_count }})
+  </button>
+  <button class="tab-button" onclick="switchTab(event, 'subscriptions')">
+    📋 {{ 'Subscriptions' if is_en else 'Abonnements' }} ({{ total_subscriptions }})
+  </button>
+  <button class="tab-button" onclick="switchTab(event, 'users')">
+    👥 {{ 'Users' if is_en else 'Utilisateurs' }} ({{ total_users }})
+  </button>
+</div>
+
+<!-- TAB 1: PAYMENTS -->
+<div id="payments" class="tab-content active">
+  <h3>{{ 'Manual Payment Validation' if is_en else 'Validation des paiements manuels' }}</h3>
+  {% if pending_payments %}
+    {% for payment in pending_payments %}
+    <div class="payment-item">
+      <div class="item-header">
+        <div class="item-title">
+          {{ 'Payment ID:' if is_en else 'ID Paiement :' }} #{{ payment.id }} 
+          {{ 'from User' if is_en else 'de l\'utilisateur' }} #{{ payment.user_id }}
+        </div>
+        <span class="item-status status-pending">{{ payment.status }}</span>
+      </div>
+      
+      <div class="item-details">
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Plan' if is_en else 'Plan' }}:</span>
+          <strong>{{ payment.plan|upper }}</strong>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Amount' if is_en else 'Montant' }}:</span>
+          <strong>${{ payment.amount|int }} {{ payment.currency }}</strong>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Provider' if is_en else 'Fournisseur' }}:</span>
+          <strong>{{ payment.provider }}</strong>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Reference' if is_en else 'Référence' }}:</span>
+          <strong>{{ payment.transaction_ref }}</strong>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Phone' if is_en else 'Téléphone' }}:</span>
+          <strong>{{ payment.payer_phone }}</strong>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'Date' if is_en else 'Date' }}:</span>
+          <strong>{{ payment.created_at }}</strong>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <form method="post" action="/payments/admin/manual/{{ payment.id }}/confirm" style="display:flex; gap: 8px; flex: 1;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="text" name="note" placeholder="{{ 'Confirmation note (optional)' if is_en else 'Note de validation (optionnel)' }}" style="flex: 1;" />
+          <button type="submit" class="btn btn-confirm">✓ {{ 'Confirm & Activate' if is_en else 'Confirmer & Activer' }}</button>
+        </form>
+      </div>
+
+      <div class="form-group">
+        <form method="post" action="/payments/admin/manual/{{ payment.id }}/reject" style="display:flex; gap: 8px; flex: 1;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="text" name="note" placeholder="{{ 'Rejection reason' if is_en else 'Motif du rejet' }}" style="flex: 1;" />
+          <button type="submit" class="btn btn-reject">✗ {{ 'Reject' if is_en else 'Rejeter' }}</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <p>{{ 'No pending payments to validate.' if is_en else 'Aucun paiement en attente de validation.' }}</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- TAB 2: SUBSCRIPTIONS -->
+<div id="subscriptions" class="tab-content">
+  <h3>{{ 'All Subscriptions' if is_en else 'Tous les abonnements' }}</h3>
+  
+  {% if all_subscriptions %}
+    <h4 style="margin-top: 20px; margin-bottom: 10px;">
+      {{ 'Pending Validation' if is_en else 'En attente de validation' }} ({{ pending_subscriptions_count }})
+    </h4>
+    {% set pending = all_subscriptions | selectattr('status', 'equalto', 'pending_validation') | list %}
+    {% if pending %}
+      {% for sub in pending %}
+      <div class="subscription-item">
+        <div class="item-header">
+          <div class="item-title">
+            {{ 'Subscription' if is_en else 'Abonnement' }} #{{ sub.id }} - {{ 'User' if is_en else 'Utilisateur' }} #{{ sub.user_id }}
+          </div>
+          <span class="item-status status-pending">{{ sub.status }}</span>
+        </div>
+        <div class="item-details">
+          <div class="detail-row">
+            <span class="detail-label">{{ 'Plan' if is_en else 'Plan' }}:</span>
+            <strong>{{ sub.plan|upper }}</strong>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ 'Provider' if is_en else 'Fournisseur' }}:</span>
+            <strong>{{ sub.provider }}</strong>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ 'Amount' if is_en else 'Montant' }}:</span>
+            <strong>${{ sub.amount|int }}</strong>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ 'Duration' if is_en else 'Durée' }}:</span>
+            <strong>{{ sub.duration_days }} {{ 'days' if is_en else 'jours' }}</strong>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ 'Created' if is_en else 'Créé' }}:</span>
+            <strong>{{ sub.created_at }}</strong>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color: #999; font-size: 13px;">{{ 'No pending subscriptions.' if is_en else 'Aucun abonnement en attente.' }}</p>
+    {% endif %}
+
+    <h4 style="margin-top: 20px; margin-bottom: 10px;">
+      {{ 'Active Subscriptions' if is_en else 'Abonnements actifs' }} ({{ active_subscriptions_count }})
+    </h4>
+    {% set active = all_subscriptions | selectattr('active', 'equalto', true) | list %}
+    {% if active %}
+      {% for sub in active %}
+      <div class="subscription-item" style="border-left-color: #10b981;">
+        <div class="item-header">
+          <div class="item-title">
+            {{ 'Subscription' if is_en else 'Abonnement' }} #{{ sub.id }} - {{ 'User' if is_en else 'Utilisateur' }} #{{ sub.user_id }}
+          </div>
+          <span class="item-status status-active">{{ 'Active' if is_en else 'Actif' }}</span>
+        </div>
+        <div class="item-details">
+          <div class="detail-row">
+            <span class="detail-label">{{ 'Plan' if is_en else 'Plan' }}:</span>
+            <strong>{{ sub.plan|upper }}</strong>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ 'Starts' if is_en else 'Début' }}:</span>
+            <strong>{{ sub.started_at }}</strong>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ 'Ends' if is_en else 'Fin' }}:</span>
+            <strong>{{ sub.ends_at }}</strong>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color: #999; font-size: 13px;">{{ 'No active subscriptions.' if is_en else 'Aucun abonnement actif.' }}</p>
+    {% endif %}
+  {% else %}
+    <div class="empty-state">
+      <p>{{ 'No subscriptions yet.' if is_en else 'Aucun abonnement pour le moment.' }}</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- TAB 3: USERS -->
+<div id="users" class="tab-content">
+  <h3>{{ 'User Management' if is_en else 'Gestion des utilisateurs' }}</h3>
+  
+  {% if all_users %}
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+            <th style="text-align: left; padding: 12px;">{{ 'ID' if is_en else 'ID' }}</th>
+            <th style="text-align: left; padding: 12px;">{{ 'Username' if is_en else 'Nom d\'utilisateur' }}</th>
+            <th style="text-align: left; padding: 12px;">{{ 'Email' if is_en else 'Email' }}</th>
+            <th style="text-align: left; padding: 12px;">{{ 'Role' if is_en else 'Rôle' }}</th>
+            <th style="text-align: left; padding: 12px;">{{ 'Status' if is_en else 'Statut' }}</th>
+            <th style="text-align: left; padding: 12px;">{{ 'Joined' if is_en else 'Inscription' }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in all_users %}
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 12px;">#{{ user.id }}</td>
+            <td style="padding: 12px;">
+              <strong>{{ user.username }}</strong>
+            </td>
+            <td style="padding: 12px;">{{ user.email }}</td>
+            <td style="padding: 12px;">
+              {% if user.is_admin_user() %}
+                <span class="user-badge admin">⚙️ {{ 'Admin' if is_en else 'Admin' }}</span>
+              {% endif %}
+              {% if user.is_premium() %}
+                <span class="user-badge premium">⭐ {{ 'Premium' if is_en else 'Premium' }}</span>
+              {% else %}
+                <span class="user-badge">{{ 'Free' if is_en else 'Gratuit' }}</span>
+              {% endif %}
+            </td>
+            <td style="padding: 12px;">
+              {% if user.is_premium() %}
+                <span style="background: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 4px; font-size: 12px;">{{ 'Active' if is_en else 'Actif' }}</span>
+              {% else %}
+                <span style="background: #f3f4f6; color: #666; padding: 3px 8px; border-radius: 4px; font-size: 12px;">{{ 'Free' if is_en else 'Gratuit' }}</span>
+              {% endif %}
+            </td>
+            <td style="padding: 12px; font-size: 13px;">{{ user.created_at[:10] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>{{ 'No users.' if is_en else 'Aucun utilisateur.' }}</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+function switchTab(event, tabName) {
+  event.preventDefault();
+  
+  // Hide all tab contents
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(content => content.classList.remove('active'));
+  
+  // Remove active class from all buttons
+  const buttons = document.querySelectorAll('.tab-button');
+  buttons.forEach(button => button.classList.remove('active'));
+  
+  // Show selected tab content
+  document.getElementById(tabName).classList.add('active');
+  
+  // Add active class to clicked button
+  event.target.classList.add('active');
+}
+</script>
+
+{% endblock %}

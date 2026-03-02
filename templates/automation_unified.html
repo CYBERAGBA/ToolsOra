@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+
+{% block title %}Automation Suite Complète{% endblock %}
+
+{% block content %}
+<main style="max-width:1400px; margin:40px auto; padding:0 20px">
+  <div class="card">
+    <h2>⚙️ Automation Suite Complète</h2>
+    <p class="small muted">Tous les outils d'automatisation en un seul endroit</p>
+    
+    <!-- MEGA TABS -->
+    <div class="mega-tabs" style="margin-top:30px;">
+      <button class="mega-tab active" onclick="switchMegaTab(event, 'dashboard')">📊 Dashboard</button>
+      <button class="mega-tab" onclick="switchMegaTab(event, 'tasks')">📝 Tâches & Workflows</button>
+      <button class="mega-tab" onclick="switchMegaTab(event, 'aiml')">🤖 AI/ML</button>
+      <button class="mega-tab" onclick="switchMegaTab(event, 'sms')">📱 SMS/WhatsApp</button>
+      <button class="mega-tab" onclick="switchMegaTab(event, 'export')">📊 Export Data</button>
+      <button class="mega-tab" onclick="switchMegaTab(event, 'notifications')">🔔 Notifications</button>
+      <button class="mega-tab" onclick="switchMegaTab(event, 'rewards')">🏆 Rewards</button>
+      <button class="mega-tab" onclick="switchMegaTab(event, 'scheduling')">📅 Scheduling</button>
+    </div>
+
+    <!-- TAB 1: DASHBOARD -->
+    <div id="dashboard" class="mega-pane active">
+      <h3>📊 Dashboard Automation</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px;">
+        <div class="stat-card">
+          <h4>Tâches Actives</h4>
+          <div class="stat-number" id="activeTasks">0</div>
+        </div>
+        <div class="stat-card">
+          <h4>Workflows</h4>
+          <div class="stat-number" id="totalWorkflows">0</div>
+        </div>
+        <div class="stat-card">
+          <h4>Logs (24h)</h4>
+          <div class="stat-number" id="recentLogs">0</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top: 20px;" onclick="loadDashboardStats()">
+        Charger Statistiques
+      </button>
+      <div id="dashboardResult" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- TAB 2: TASKS & WORKFLOWS -->
+    <div id="tasks" class="mega-pane">
+      <h3>📝 Tâches & Workflows</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Créer une tâche -->
+        <div>
+          <h4>Créer une Tâche</h4>
+          <div>
+            <label>Nom:</label>
+            <input type="text" id="taskName" placeholder="Ex: Envoyer emails">
+          </div>
+          <div style="margin-top: 10px;">
+            <label>Description:</label>
+            <textarea id="taskDesc" placeholder="Détails..." style="width:100%; height:80px;"></textarea>
+          </div>
+          <div style="margin-top: 10px;">
+            <label>Récurrence:</label>
+            <select id="taskRecurrence">
+              <option value="once">Une fois</option>
+              <option value="daily">Quotidienne</option>
+              <option value="weekly">Hebdomadaire</option>
+              <option value="monthly">Mensuelle</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="margin-top: 10px;" onclick="createTask()">
+            Créer Tâche
+          </button>
+        </div>
+        <!-- Lister les tâches -->
+        <div>
+          <h4>Mes Tâches</h4>
+          <button class="btn btn-secondary" onclick="loadTasksList()" style="margin-bottom: 10px;">
+            Charger Tâches
+          </button>
+          <div id="tasksList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: AI/ML -->
+    <div id="aiml" class="mega-pane">
+      <h3>🤖 AI/ML - Génération de Contenu</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <label>Type:</label>
+          <select id="contentType">
+            <option value="article">Article</option>
+            <option value="email">Email</option>
+            <option value="social_post">Post Social</option>
+          </select>
+        </div>
+        <div>
+          <label>Sujet:</label>
+          <input type="text" id="aimlTopic" placeholder="L'IA en éducation">
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:15px;" onclick="generateContent()">
+        Générer
+      </button>
+      <div id="aimlResult" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- TAB 4: SMS/WHATSAPP -->
+    <div id="sms" class="mega-pane">
+      <h3>📱 SMS & WhatsApp</h3>
+      <div>
+        <label>Message:</label>
+        <textarea id="smsMessage" placeholder="Votre texte..." style="width:100%; height:80px;"></textarea>
+      </div>
+      <div style="margin-top:10px;">
+        <label>Destinataires (un par ligne):</label>
+        <textarea id="smsRecipients" placeholder="+33612345678" style="width:100%; height:100px;"></textarea>
+      </div>
+      <button class="btn btn-primary" style="margin-top:15px;" onclick="sendSMS()">
+        Envoyer SMS
+      </button>
+      <div id="smsResult" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- TAB 5: EXPORT DATA -->
+    <div id="export" class="mega-pane">
+      <h3>📊 Exporter les Données</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+          <label>Type de données:</label>
+          <select id="exportData">
+            <option value="users">Utilisateurs</option>
+            <option value="courses">Cours</option>
+            <option value="logs">Logs</option>
+          </select>
+        </div>
+        <div>
+          <label>Format:</label>
+          <select id="exportFormat">
+            <option value="csv">CSV</option>
+            <option value="json">JSON</option>
+            <option value="xml">XML</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:15px;" onclick="exportData()">
+        Exporter
+      </button>
+      <div id="exportResult" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- TAB 6: NOTIFICATIONS -->
+    <div id="notifications" class="mega-pane">
+      <h3>🔔 Envoyer une Notification</h3>
+      <div>
+        <label>Titre:</label>
+        <input type="text" id="notifTitle" placeholder="Titre de la notification">
+      </div>
+      <div style="margin-top:10px;">
+        <label>Message:</label>
+        <textarea id="notifBody" placeholder="Contenu..." style="width:100%; height:80px;"></textarea>
+      </div>
+      <button class="btn btn-primary" style="margin-top:15px;" onclick="sendNotification()">
+        Envoyer
+      </button>
+      <div id="notifResult" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- TAB 7: REWARDS -->
+    <div id="rewards" class="mega-pane">
+      <h3>🏆 Points & Rewards</h3>
+      <button class="btn btn-secondary" onclick="loadUserPoints()" style="margin-bottom:15px;">
+        Charger Mes Points
+      </button>
+      <div id="rewardsResult"></div>
+      <div style="margin-top:20px;">
+        <h4>Convertir Points</h4>
+        <input type="number" id="pointsToRedeem" placeholder="Points à convertir" min="100">
+        <button class="btn btn-primary" style="margin-top:10px;" onclick="redeemPoints()">
+          Convertir
+        </button>
+        <div id="redeemResult" style="margin-top:15px;"></div>
+      </div>
+    </div>
+
+    <!-- TAB 8: SCHEDULING -->
+    <div id="scheduling" class="mega-pane">
+      <h3>📅 Planifier une Réunion</h3>
+      <div>
+        <label>Titre:</label>
+        <input type="text" id="meetingTitle" placeholder="Réunion d'équipe">
+      </div>
+      <div style="margin-top:10px;">
+        <label>Durée (minutes):</label>
+        <input type="number" id="meetingDuration" value="60">
+      </div>
+      <div style="margin-top:10px;">
+        <label>Date:</label>
+        <input type="date" id="meetingDate">
+      </div>
+      <button class="btn btn-primary" style="margin-top:15px;" onclick="scheduleMeeting()">
+        Planifier
+      </button>
+      <div id="meetingResult" style="margin-top:20px;"></div>
+    </div>
+
+  </div>
+</main>
+
+<style>
+  .mega-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 3px solid #e0e0e0;
+    flex-wrap: wrap;
+    overflow-x: auto;
+  }
+  .mega-tab {
+    background: none;
+    border: none;
+    padding: 15px 18px;
+    cursor: pointer;
+    border-bottom: 4px solid transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+  .mega-tab:hover {
+    color: #333;
+    background: rgba(0,0,0,0.02);
+  }
+  .mega-tab.active {
+    border-bottom-color: #007bff;
+    color: #007bff;
+  }
+  .mega-pane {
+    display: none;
+    padding: 30px 0;
+  }
+  .mega-pane.active {
+    display: block;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .stat-card h4 {
+    margin: 0 0 10px 0;
+    opacity: 0.9;
+    font-size: 14px;
+  }
+  .stat-number {
+    font-size: 32px;
+    font-weight: bold;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+  }
+  [id*="Result"] {
+    color: #333 !important;
+    background: #f5f5f5 !important;
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+  }
+</style>
+
+<script>
+  function switchMegaTab(event, tabName) {
+    event.preventDefault();
+    document.querySelectorAll('.mega-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.mega-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  async function generateContent() {
+    const data = {
+      content_type: document.getElementById('contentType').value,
+      topic: document.getElementById('aimlTopic').value,
+      tone: 'professional',
+      length: 'medium',
+      language: 'fr'
+    };
+    try {
+      const response = await fetch('/modules/aiml/generate-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('aimlResult').innerHTML = `<h4>✅ Contenu Généré:</h4><p>${result.content.replace(/\n/g, '<br>')}</p>`;
+      } else {
+        document.getElementById('aimlResult').innerHTML = `<h4>❌ Erreur:</h4><p>${result.error}</p>`;
+      }
+    } catch (e) {
+      document.getElementById('aimlResult').innerHTML = `<h4>❌ Erreur:</h4><p>${e.message}</p>`;
+    }
+  }
+
+  async function sendSMS() {
+    const recipients = document.getElementById('smsRecipients').value.trim().split('\n').filter(r => r);
+    const data = { message: document.getElementById('smsMessage').value, recipients: recipients };
+    try {
+      const response = await fetch('/modules/sms/send-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('smsResult').innerHTML = `<h4>✅ SMS Envoyés:</h4><p>Statut: ${result.status}</p>`;
+      } else {
+        document.getElementById('smsResult').innerHTML = `<h4>❌ Erreur:</h4><p>${result.error}</p>`;
+      }
+    } catch (e) {
+      document.getElementById('smsResult').innerHTML = `<h4>❌ Erreur:</h4><p>${e.message}</p>`;
+    }
+  }
+
+  async function exportData() {
+    const data = {
+      data_type: document.getElementById('exportData').value,
+      format: document.getElementById('exportFormat').value
+    };
+    try {
+      const response = await fetch('/modules/export/export-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('exportResult').innerHTML = `<h4>✅ Export Créé:</h4><p>Fichier: ${result.filename}</p>`;
+      } else {
+        document.getElementById('exportResult').innerHTML = `<h4>❌ Erreur:</h4><p>${result.error}</p>`;
+      }
+    } catch (e) {
+      document.getElementById('exportResult').innerHTML = `<h4>❌ Erreur:</h4><p>${e.message}</p>`;
+    }
+  }
+
+  async function sendNotification() {
+    const data = {
+      title: document.getElementById('notifTitle').value,
+      body: document.getElementById('notifBody').value,
+      recipients: 'all'
+    };
+    try {
+      const response = await fetch('/modules/notifications/send-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('notifResult').innerHTML = `<h4>✅ Notification Envoyée</h4><p>À: ${result.sent} utilisateurs</p>`;
+      } else {
+        document.getElementById('notifResult').innerHTML = `<h4>❌ Erreur:</h4><p>${result.error}</p>`;
+      }
+    } catch (e) {
+      document.getElementById('notifResult').innerHTML = `<h4>❌ Erreur:</h4><p>${e.message}</p>`;
+    }
+  }
+
+  async function loadUserPoints() {
+    try {
+      const response = await fetch('/modules/rewards/user-points/current');
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('rewardsResult').innerHTML = `
+          <h4>⭐ Vos Points</h4>
+          <p><strong>Total:</strong> ${result.total_points}</p>
+          <p><strong>Tier:</strong> ${result.tier}</p>
+        `;
+      }
+    } catch (e) {
+      document.getElementById('rewardsResult').innerHTML = `<p>Erreur: ${e.message}</p>`;
+    }
+  }
+
+  async function redeemPoints() {
+    const data = { reward_type: 'coupon', points_to_redeem: parseInt(document.getElementById('pointsToRedeem').value) };
+    try {
+      const response = await fetch('/modules/rewards/redeem-points', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('redeemResult').innerHTML = `<h4>✅ Conversion Réussie</h4><p>Code: ${result.reward.coupon_code}</p>`;
+      } else {
+        document.getElementById('redeemResult').innerHTML = `<h4>❌ Erreur:</h4><p>${result.error}</p>`;
+      }
+    } catch (e) {
+      document.getElementById('redeemResult').innerHTML = `<h4>❌ Erreur:</h4><p>${e.message}</p>`;
+    }
+  }
+
+  async function scheduleMeeting() {
+    const data = {
+      title: document.getElementById('meetingTitle').value,
+      participants: [],
+      duration_minutes: parseInt(document.getElementById('meetingDuration').value),
+      preferred_time: 'morning'
+    };
+    try {
+      const response = await fetch('/modules/scheduling/schedule-meeting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('meetingResult').innerHTML = `<h4>✅ Réunion Planifiée</h4><p>${result.message || 'Réunion créée'}</p>`;
+      } else {
+        document.getElementById('meetingResult').innerHTML = `<h4>❌ Erreur:</h4><p>${result.error}</p>`;
+      }
+    } catch (e) {
+      document.getElementById('meetingResult').innerHTML = `<h4>❌ Erreur:</h4><p>${e.message}</p>`;
+    }
+  }
+
+  async function loadDashboardStats() {
+    try {
+      const response = await fetch('/modules/automation/stats');
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById('activeTasks').textContent = result.active_tasks || 0;
+        document.getElementById('totalWorkflows').textContent = result.total_workflows || 0;
+        document.getElementById('recentLogs').textContent = result.recent_logs || 0;
+      }
+    } catch (e) {
+      console.error('Erreur chargement stats:', e);
+    }
+  }
+
+  async function loadTasksList() {
+    try {
+      const response = await fetch('/modules/automation/tasks-list');
+      const result = await response.json();
+      if (result.success) {
+        const html = result.tasks.map(t => `<div style="padding:8px; border-bottom:1px solid #ddd;"><strong>${t.name}</strong></div>`).join('');
+        document.getElementById('tasksList').innerHTML = html || '<p>Aucune tâche</p>';
+      }
+    } catch (e) {
+      document.getElementById('tasksList').innerHTML = `<p>Erreur: ${e.message}</p>`;
+    }
+  }
+
+  async function createTask() {
+    const data = {
+      task_name: document.getElementById('taskName').value,
+      description: document.getElementById('taskDesc').value,
+      recurrence: document.getElementById('taskRecurrence').value
+    };
+    try {
+      const response = await fetch('/modules/automation/schedule-task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('✅ Tâche créée!');
+        loadTasksList();
+      } else {
+        alert('❌ Erreur: ' + result.error);
+      }
+    } catch (e) {
+      alert('❌ Erreur: ' + e.message);
+    }
+  }
+</script>
+{% endblock %}

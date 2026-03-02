@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Logo en haut à droite -->
+<div class="center-logo">
+  <img src="{{ url_for('static', filename='logo13.png') }}" 
+       alt="ToolsOra Logo">
+</div>
+
+<section class="hero card hero-section">
+
+  <!-- Robot IA en fond avec effet parallax -->
+  <img src="{{ url_for('static', filename='robot2.png') }}" 
+       alt="Robot IA" 
+       id="robot-bg"
+       class="hero-robot"
+  />
+
+  <div class="hero-content">
+    <div class="hero-text">
+
+      <!-- Titre avec gradient -->
+      <h2 class="hero-title">
+        {{ 'Welcome to ToolsOra' if is_en else 'Bienvenue sur ToolsOra' }}
+      </h2>
+
+      <p class="small muted">
+        {{ 'A modular platform for education, automation, and SaaS tools — build, share, and automate your learning workflows.' if is_en else "Une plateforme modulaire pour l'éducation, l'automatisation et les outils SaaS — construisez, partagez et automatisez vos workflows pédagogiques." }}
+      </p>
+
+      <div class="hero-buttons">
+        <a class="kbd" href="/auth/register">{{ 'Create account' if is_en else 'Créer un compte' }}</a>
+        <a class="kbd" href="/auth/login">{{ 'Sign in' if is_en else 'Se connecter' }}</a>
+        <a class="kbd" href="/modules/education/lessons">{{ 'Explore lessons' if is_en else 'Explorer les leçons' }}</a>
+      </div>
+
+      <ul class="hero-features">
+        <li class="small muted"><strong>{{ 'Modular' if is_en else 'Modulaire' }}</strong> — {{ 'activate only what you need' if is_en else 'activez uniquement ce dont vous avez besoin' }}</li>
+        <li class="small muted"><strong>{{ 'Secure' if is_en else 'Sécurisé' }}</strong> — {{ 'simple user management' if is_en else 'gestion des utilisateurs simple' }}</li>
+      </ul>
+    </div>
+
+    <div class="hero-illustration">
+      <div class="hero-illustration-inner">
+        <img src="/static/img/hero-illustration.svg" alt="Illustration"/>
+        <div class="mt-10 small muted">{{ 'Illustration: workflows and modules' if is_en else 'Illustration: flux de travail et modules' }}</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section class="grid">
+  <div class="card clickable" data-href="/modules/education/">
+    <div class="feature-icon feature-icon-blue">🎓</div>
+    <h3>Education</h3>
+    <p class="small muted">Leçons, parcours et évaluations.</p>
+  </div>
+
+  <div class="card clickable" data-href="/modules/saas">
+    <div class="feature-icon feature-icon-green">☁️</div>
+    <h3>{{ 'SaaS Tools' if is_en else 'Outils SaaS' }}</h3>
+    <p class="small muted">{{ 'Ready-to-use integrations and apps.' if is_en else "Intégrations et applications prêtes à l'emploi." }}</p>
+  </div>
+
+  <div class="card clickable" data-href="/modules/automation/">
+    <div class="feature-icon feature-icon-orange">⚙️</div>
+    <h3>{{ 'Automation' if is_en else 'Automatisation' }}</h3>
+    <p class="small muted">{{ 'Schedule tasks, reports, and notifications.' if is_en else 'Planifiez des tâches, rapports et envois.' }}</p>
+  </div>
+</section>
+
+<section class="card">
+  <h3>{{ 'Key Features' if is_en else 'Fonctionnalités clés' }}</h3>
+
+  <div class="features-grid">
+
+    <div class="card feature-card">
+      <div class="feature-card-icon feature-icon-blue">⚡</div>
+      <div class="feature-card-title">{{ 'Quick Start' if is_en else 'Démarrage rapide' }}</div>
+      <div class="small muted">{{ 'Install and configure in minutes.' if is_en else 'Installation et configuration en quelques minutes.' }}</div>
+    </div>
+
+    <div class="card feature-card">
+      <div class="feature-card-icon feature-icon-green">🧩</div>
+      <div class="feature-card-title">{{ 'Extensible Plugins' if is_en else 'Plugins extensibles' }}</div>
+      <div class="small muted">{{ 'Add modules based on your needs.' if is_en else 'Ajoutez des modules selon vos besoins.' }}</div>
+    </div>
+
+    <div class="card feature-card">
+      <div class="feature-card-icon feature-icon-orange">🛡️</div>
+      <div class="feature-card-title">{{ 'Access Control' if is_en else "Contrôle d'accès" }}</div>
+      <div class="small muted">{{ 'Secure user and permission management.' if is_en else 'Gestion sécurisée des utilisateurs et permissions.' }}</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- JS Parallax pour robot -->
+<script>
+  window.addEventListener('scroll', () => {
+    const robot = document.getElementById('robot-bg');
+    if (robot) {
+      const offset = window.scrollY * 0.3; // effet plus marqué
+      robot.style.transform = `translateY(calc(-50% + ${offset}px))`;
+    }
+  });
+</script>
+
+{% endblock %}

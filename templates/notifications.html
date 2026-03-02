@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications Push{% endblock %}
+
+{% block content %}
+<main style="max-width:1200px; margin:40px auto; padding:0 20px">
+  <div class="card">
+    <h2>🔔 Notifications Push & In-App</h2>
+    <p class="small muted">Envoyez des notifications push avec Firebase et gérez vos préférences</p>
+    
+    <div class="nav-tabs" style="margin-top:20px;">
+      <button class="btn-tab active" onclick="switchTab(event, 'send')">📤 Envoyer</button>
+      <button class="btn-tab" onclick="switchTab(event, 'inbox')">📬 Boîte de Réception</button>
+      <button class="btn-tab" onclick="switchTab(event, 'preferences')">⚙️ Préférences</button>
+      <button class="btn-tab" onclick="switchTab(event, 'analytics')">📊 Analytics</button>
+    </div>
+
+    <!-- TAB 1: SEND -->
+    <div id="send" class="tab-pane active">
+      <h3>📤 Envoyer une Notification</h3>
+      <div>
+        <label>Titre:</label>
+        <input type="text" id="notifTitle" placeholder="Ex: Nouvelle promotion!" required>
+      </div>
+      <div style="margin-top:10px;">
+        <label>Message:</label>
+        <textarea id="notifBody" placeholder="Détails de la notification" style="width:100%; height:80px;"></textarea>
+      </div>
+      <div style="margin-top:10px;">
+        <label>Destinataires:</label>
+        <select id="recipients">
+          <option value="all">Tous les utilisateurs</option>
+          <option value="custom">Utilisateurs sélectionnés</option>
+        </select>
+      </div>
+      <div id="customRecipients" style="display:none; margin-top:10px;">
+        <textarea placeholder="User IDs (un par ligne)" style="width:100%; height:80px;"></textarea>
+      </div>
+      <div style="margin-top:10px;">
+        <label>Priorité:</label>
+        <select id="priority">
+          <option value="normal">Normal</option>
+          <option value="high">Élevée</option>
+        </select>
+      </div>
+      <button type="button" onclick="sendPush()" class="btn btn-primary" style="margin-top:15px;">
+        Envoyer Notification
+      </button>
+      <div id="sendResult" style="margin-top:20px; display:none;"></div>
+    </div>
+
+    <!-- TAB 2: INBOX -->
+    <div id="inbox" class="tab-pane">
+      <h3>📬 Boîte de Réception</h3>
+      <button type="button" onclick="loadNotifications()" class="btn btn-secondary">
+        Charger Notifications
+      </button>
+      <div id="notificationsList" style="margin-top:15px;"></div>
+    </div>
+
+    <!-- TAB 3: PREFERENCES -->
+    <div id="preferences" class="tab-pane">
+      <h3>⚙️ Vos Préférences</h3>
+      <div>
+        <label>
+          <input type="checkbox" id="muteAll"> Désactiver toutes les notifications
+        </label>
+      </div>
+      <div style="margin-top:15px;">
+        <label>
+          <input type="checkbox" id="quietHours"> Activer les heures silencieuses
+        </label>
+      </div>
+      <div id="quietHoursConfig" style="display:none; margin-top:10px;">
+        <label>De:</label>
+        <input type="time" id="quietStart" value="22:00">
+        <label style="margin-left:20px;">À:</label>
+        <input type="time" id="quietEnd" value="08:00">
+      </div>
+      <div style="margin-top:15px;">
+        <label>Catégories acceptées:</label>
+        <label><input type="checkbox" checked> Promotions</label>
+        <label><input type="checkbox" checked> Mises à jour</label>
+        <label><input type="checkbox" checked> Messages</label>
+        <label><input type="checkbox" checked> Alertes</label>
+      </div>
+      <button type="button" onclick="savePreferences()" class="btn btn-primary" style="margin-top:15px;">
+        Enregistrer Préférences
+      </button>
+      <div id="prefResult" style="margin-top:20px; display:none;"></div>
+    </div>
+
+    <!-- TAB 4: ANALYTICS -->
+    <div id="analytics" class="tab-pane">
+      <h3>📊 Analytics des Notifications</h3>
+      <button type="button" onclick="loadAnalytics()" class="btn btn-secondary">
+        Charger Analytics
+      </button>
+      <div id="analyticsResult" style="margin-top:15px;"></div>
+    </div>
+
+  </div>
+</main>
+
+<style>
+  .nav-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #e0e0e0;
+  }
+  .btn-tab {
+    background: none;
+    border: none;
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    font-weight: 500;
+    color: #666;
+  }
+  .btn-tab.active {
+    border-bottom-color: #007bff;
+    color: #007bff;
+  }
+  .tab-pane {
+    display: none;
+    padding: 20px 0;
+  }
+  .tab-pane.active {
+    display: block;
+  }
+  input[type="text"], textarea, select, input[type="time"] {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+  }
+  #sendResult, #prefResult, #analyticsResult {
+    background: #d4edda;
+    padding: 15px;
+    border-radius: 4px;
+    color: #155724;
+  }
+  #sendResult h4, #prefResult h4, #analyticsResult h4 {
+    color: #155724;
+    margin-top: 0;
+  }
+  #sendResult p, #sendResult strong,
+  #prefResult p, #prefResult strong,
+  #analyticsResult p, #analyticsResult strong {
+    color: #155724;
+  }
+</style>
+
+<script>
+  function switchTab(event, tabName) {
+    event.preventDefault();
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelectorAll('.btn-tab').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  document.getElementById('recipients')?.addEventListener('change', function() {
+    document.getElementById('customRecipients').style.display = this.value === 'custom' ? 'block' : 'none';
+  });
+
+  document.getElementById('quietHours')?.addEventListener('change', function() {
+    document.getElementById('quietHoursConfig').style.display = this.checked ? 'block' : 'none';
+  });
+
+  async function sendPush() {
+    const data = {
+      title: document.getElementById('notifTitle').value,
+      body: document.getElementById('notifBody').value,
+      recipients: document.getElementById('recipients').value === 'all' ? 'all' : [],
+      priority: document.getElementById('priority').value
+    };
+
+    try {
+      const response = await fetch('/modules/notifications/send-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('sendResult').innerHTML = `
+          <h4>✅ Notification Envoyée</h4>
+          <p>Envoyées à: ${result.sent} utilisateurs</p>
+          <p>Erreurs: ${result.failed}</p>
+        `;
+        document.getElementById('sendResult').style.display = 'block';
+      } else {
+        alert('Erreur: ' + result.error);
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function loadNotifications() {
+    try {
+      const response = await fetch('/modules/notifications/in-app-notifications');
+      const result = await response.json();
+      
+      const html = result.notifications.map(n => `
+        <div style="background:#f9f9f9; padding:10px; margin:10px 0; border-radius:4px;">
+          <strong>${n.title}</strong><br>
+          ${n.body}<br>
+          <small style="color:#666;">${new Date(n.timestamp).toLocaleString()}</small>
+        </div>
+      `).join('');
+      
+      document.getElementById('notificationsList').innerHTML = html || '<p>Aucune notification</p>';
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function savePreferences() {
+    const data = {
+      mute_all: document.getElementById('muteAll').checked,
+      quiet_hours_enabled: document.getElementById('quietHours').checked,
+      quiet_hours_start: document.getElementById('quietStart').value,
+      quiet_hours_end: document.getElementById('quietEnd').value
+    };
+
+    try {
+      const response = await fetch('/modules/notifications/preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('prefResult').innerHTML = '<h4>✅ Préférences Enregistrées</h4>';
+        document.getElementById('prefResult').style.display = 'block';
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function loadAnalytics() {
+    try {
+      const response = await fetch('/modules/notifications/analytics');
+      const result = await response.json();
+      
+      document.getElementById('analyticsResult').innerHTML = `
+        <div style="background:#f9f9f9; padding:15px; border-radius:4px;">
+          <p><strong>Notifications envoyées (30j):</strong> ${result.sent}</p>
+          <p><strong>Ouvertes:</strong> ${result.opened} (${result.open_rate})</p>
+          <p><strong>Cliquées:</strong> ${result.clicked} (${result.click_rate})</p>
+        </div>
+      `;
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+</script>
+{% endblock %}

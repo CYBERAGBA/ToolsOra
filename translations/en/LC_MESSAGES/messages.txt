@@ -1,0 +1,15 @@
+# Traductions pour l'anglais
+msgid "Hello"
+msgstr "Hello"
+
+msgid "Welcome"
+msgstr "Welcome"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Home"
+msgstr "Home"

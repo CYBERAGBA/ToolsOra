@@ -1,0 +1,734 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'All Lessons — Education' if is_en else 'Toutes les Leçons — Éducation' }} | OraHub{% endblock %}
+
+{% block content %}
+<style>
+  /* ── Hero ── */
+  .lessons-hero {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d3748 50%, #1a202c 100%);
+    color: #fff;
+    padding: 55px 0 45px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .lessons-hero::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(102,126,234,.25) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .lessons-hero h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 12px; }
+  .lessons-hero p.lead { color: rgba(255,255,255,.85); font-size: 1.1rem; max-width: 700px; }
+  .hero-stats { display: flex; gap: 30px; margin-top: 22px; flex-wrap: wrap; }
+  .hero-stats .hs { display: flex; align-items: center; gap: 8px; }
+  .hero-stats .hs i { color: #68d391; font-size: 1.15rem; }
+
+  /* ── Filter tabs ── */
+  .theme-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 35px; }
+  .theme-tab {
+    padding: 10px 22px; border-radius: 25px; border: 2px solid #e2e8f0;
+    background: #fff; color: #4a5568; font-weight: 500; cursor: pointer;
+    transition: all .25s; text-decoration: none; font-size: .92rem;
+  }
+  .theme-tab:hover, .theme-tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff; border-color: transparent;
+  }
+
+  /* ── Theme section ── */
+  .theme-section { margin-bottom: 50px; display: none; }
+  .theme-section.active { display: block; }
+  .theme-header {
+    display: flex; align-items: center; gap: 15px;
+    margin-bottom: 22px; padding-bottom: 14px;
+    border-bottom: 3px solid;
+  }
+  .theme-header .th-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: #fff; flex-shrink: 0;
+  }
+  .theme-header h2 { font-size: 1.6rem; font-weight: 700; color: #2d3748; margin: 0; }
+  .theme-header p  { color: #718096; margin: 4px 0 0; font-size: .92rem; }
+
+  /* ── Lesson cards ── */
+  .lessons-grid { display: grid; gap: 20px; }
+  .lesson-card {
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.07);
+    overflow: hidden; display: flex;
+    transition: transform .3s, box-shadow .3s;
+  }
+  .lesson-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  }
+  .lc-num {
+    min-width: 72px; display: flex; align-items: center;
+    justify-content: center; font-size: 1.8rem; font-weight: 700; color: #fff;
+  }
+  .lc-body { padding: 22px 25px; flex: 1; }
+  .lc-body h3 { font-size: 1.2rem; font-weight: 600; color: #2d3748; margin-bottom: 6px; }
+  .lc-body .lc-desc { color: #4a5568; font-size: .93rem; line-height: 1.65; margin-bottom: 14px; }
+  .lc-meta { display: flex; gap: 18px; color: #718096; font-size: .85rem; margin-bottom: 14px; flex-wrap: wrap; }
+  .lc-meta span { display: flex; align-items: center; gap: 5px; }
+  .lc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .lc-tag {
+    padding: 3px 10px; border-radius: 12px;
+    font-size: .78rem; font-weight: 500;
+  }
+  .lc-tag-green  { background: #c6f6d5; color: #276749; }
+  .lc-tag-orange { background: #feebc8; color: #c05621; }
+  .lc-tag-red    { background: #fed7e2; color: #97266d; }
+  .lc-tag-blue   { background: #bee3f8; color: #2a4365; }
+  .lc-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-lesson {
+    padding: 9px 18px; border-radius: 8px; font-weight: 500;
+    text-decoration: none; font-size: .88rem; transition: all .25s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-lesson-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; }
+  .btn-lesson-primary:hover { opacity: .9; color: #fff; }
+  .btn-lesson-outline { background: #f7fafc; border: 2px solid #667eea; color: #667eea; }
+  .btn-lesson-outline:hover { background: #667eea; color: #fff; }
+  .btn-lesson-pink { background: linear-gradient(135deg, #ec4899, #f43f5e); color: #fff; border: none; }
+  .btn-lesson-pink:hover { opacity: .9; color: #fff; }
+  .btn-lesson-outline-pink { background: #f7fafc; border: 2px solid #ec4899; color: #ec4899; }
+  .btn-lesson-outline-pink:hover { background: #ec4899; color: #fff; }
+  .btn-lesson-teal { background: linear-gradient(135deg, #38b2ac, #319795); color: #fff; border: none; }
+  .btn-lesson-teal:hover { opacity: .9; color: #fff; }
+  .btn-lesson-amber { background: linear-gradient(135deg, #d69e2e, #b7791f); color: #fff; border: none; }
+  .btn-lesson-amber:hover { opacity: .9; color: #fff; }
+
+  /* ── Objectives boxes ── */
+  .objectives-box {
+    background: #f7fafc; border-radius: 12px;
+    padding: 22px 28px; margin-bottom: 22px;
+    border-left: 4px solid;
+  }
+  .objectives-box h4 { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: #2d3748; }
+  .objectives-box ul { padding-left: 20px; margin: 0; }
+  .objectives-box li { color: #4a5568; line-height: 1.7; margin-bottom: 4px; font-size: .92rem; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .lesson-card { flex-direction: column; }
+    .lc-num { min-width: auto; padding: 14px 0; }
+    .lessons-hero h1 { font-size: 1.8rem; }
+  }
+</style>
+
+<!-- ═════════════════ HERO ═════════════════ -->
+<div class="lessons-hero">
+  <div class="container">
+    <h1><i class="fas fa-graduation-cap me-2"></i>{{ 'All Lessons' if is_en else 'Toutes les Leçons' }}</h1>
+    <p class="lead">
+      {{ 'Explore all our structured courses: Data Analysis, Digital Marketing, Technology, Business and Creativity. Each lesson is progressive and accompanied by interactive quizzes.' if is_en else 'Explorez toutes nos formations structurées : Analyse de Données, Marketing Digital, Technologie, Business et Créativité. Chaque leçon est progressive et accompagnée de quiz interactifs.' }}
+    </p>
+    <div class="hero-stats">
+      <div class="hs"><i class="fas fa-book"></i><span>{{ '5 themes' if is_en else '5 thèmes' }}</span></div>
+      <div class="hs"><i class="fas fa-file-alt"></i><span>{{ '20+ detailed lessons' if is_en else '20+ leçons détaillées' }}</span></div>
+      <div class="hs"><i class="fas fa-tasks"></i><span>{{ 'Interactive quizzes' if is_en else 'Quiz interactifs' }}</span></div>
+      <div class="hs"><i class="fas fa-signal"></i><span>{{ 'Beginner → Advanced' if is_en else 'Débutant → Avancé' }}</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═════════════════ TABS ═════════════════ -->
+  <div class="theme-tabs">
+    <a class="theme-tab active" data-target="all" href="#">
+      <i class="fas fa-th-large me-1"></i>{{ 'All' if is_en else 'Tout' }}
+    </a>
+    <a class="theme-tab" data-target="data" href="#">
+      <i class="fas fa-chart-bar me-1"></i>Data & Analyse
+    </a>
+    <a class="theme-tab" data-target="marketing" href="#">
+      <i class="fas fa-bullhorn me-1"></i>Marketing Digital
+    </a>
+    <a class="theme-tab" data-target="techno" href="#">
+      <i class="fas fa-microchip me-1"></i>{{ 'Technology' if is_en else 'Technologie' }}
+    </a>
+    <a class="theme-tab" data-target="business" href="#">
+      <i class="fas fa-briefcase me-1"></i>Business
+    </a>
+    <a class="theme-tab" data-target="creative" href="#">
+      <i class="fas fa-palette me-1"></i>{{ 'Creativity & Design' if is_en else 'Créativité & Design' }}
+    </a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       THEME 1 — DATA & ANALYSE
+  ══════════════════════════════════════════════ -->
+  <section class="theme-section active" id="sec-data">
+    <div class="theme-header" style="border-color:#667eea;">
+      <div class="th-icon" style="background:linear-gradient(135deg,#667eea,#764ba2);">
+        <i class="fas fa-chart-bar"></i>
+      </div>
+      <div>
+        <h2>Data & Analyse</h2>
+        <p>{{ 'Complete course: from fundamentals to advanced visualization with Python' if is_en else 'Cours complet : des fondamentaux à la visualisation avancée avec Python' }}</p>
+      </div>
+    </div>
+
+    <div class="objectives-box" style="border-color:#667eea;">
+      <h4><i class="fas fa-bullseye me-2" style="color:#667eea;"></i>{{ 'Learning objectives' if is_en else 'Objectifs d\'apprentissage' }}</h4>
+      <ul>
+        <li>{{ 'Understand the 4 types of data analysis (descriptive, diagnostic, predictive, prescriptive)' if is_en else 'Comprendre les 4 types d\'analyse de données (descriptive, diagnostique, prédictive, prescriptive)' }}</li>
+        <li>{{ 'Master data cleaning and preparation techniques' if is_en else 'Maîtriser les techniques de nettoyage et préparation des données' }}</li>
+        <li>{{ 'Apply essential descriptive statistics (mean, median, quartiles, standard deviation)' if is_en else 'Appliquer les statistiques descriptives essentielles (moyenne, médiane, quartiles, écart-type)' }}</li>
+        <li>{{ 'Create professional visualizations with Python (Matplotlib, Seaborn, Plotly)' if is_en else 'Créer des visualisations professionnelles avec Python (Matplotlib, Seaborn, Plotly)' }}</li>
+      </ul>
+    </div>
+
+    <div class="lessons-grid">
+      <!-- Leçon 1 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#667eea,#764ba2);">1</div>
+        <div class="lc-body">
+          <h3>{{ "Introduction to Data Analysis" if is_en else "Introduction à l'Analyse de Données" }}</h3>
+          <p class="lc-desc">
+            {{ 'Discover the 4 types of analysis, the data lifecycle, and the essential tools of a Data Analyst. Solid foundations for the entire course.' if is_en else 'Découvrez les 4 types d\'analyse, le cycle de vie des données et les outils essentiels du Data Analyst. Des bases solides pour tout le parcours.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>45 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-green">{{ 'Beginner' if is_en else 'Débutant' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Theory' if is_en else 'Théorie' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.data_analyse_lesson', lesson_id=1) }}" class="btn-lesson btn-lesson-primary"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='data-analyse', lesson_id=1) }}" class="btn-lesson btn-lesson-outline"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leçon 2 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#667eea,#764ba2);">2</div>
+        <div class="lc-body">
+          <h3>{{ "Data Cleaning and Preparation" if is_en else "Nettoyage et Préparation des Données" }}</h3>
+          <p class="lc-desc">
+            {{ '80% of a Data Analyst\'s time is spent on cleaning. Learn to handle missing values, duplicates, outliers, and standardize your data for reliable analysis.' if is_en else '80% du temps d\'un Data Analyst est consacré au nettoyage. Apprenez à gérer les valeurs manquantes, les doublons, les outliers et à standardiser vos données pour une analyse fiable.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>60 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Practical' if is_en else 'Pratique' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.data_analyse_lesson', lesson_id=2) }}" class="btn-lesson btn-lesson-primary"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='data-analyse', lesson_id=2) }}" class="btn-lesson btn-lesson-outline"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leçon 3 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#667eea,#764ba2);">3</div>
+        <div class="lc-body">
+          <h3>{{ "Essential Descriptive Statistics" if is_en else "Statistiques Descriptives Essentielles" }}</h3>
+          <p class="lc-desc">
+            {{ 'Master measures of central tendency (mean, median, mode) and dispersion (variance, standard deviation, IQR). Learn to choose the right visualization for your data.' if is_en else 'Maîtrisez les mesures de tendance centrale (moyenne, médiane, mode) et de dispersion (variance, écart-type, IQR). Apprenez à choisir la bonne visualisation pour vos données.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>50 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Theory + Practice' if is_en else 'Théorie + Pratique' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.data_analyse_lesson', lesson_id=3) }}" class="btn-lesson btn-lesson-primary"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='data-analyse', lesson_id=3) }}" class="btn-lesson btn-lesson-outline"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leçon 4 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#667eea,#764ba2);">4</div>
+        <div class="lc-body">
+          <h3>{{ "Data Visualization with Python" if is_en else "Visualisation de Données avec Python" }}</h3>
+          <p class="lc-desc">
+            {{ 'Learn to tell a story with data using Matplotlib, Seaborn, and Plotly. Master the 5 golden rules for creating impactful visuals.' if is_en else 'Apprenez à raconter une histoire avec les données grâce à Matplotlib, Seaborn et Plotly. Maîtrisez les 5 règles d\'or pour créer des visuels percutants.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>75 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-red">{{ 'Advanced' if is_en else 'Avancé' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Code + Practice' if is_en else 'Code + Pratique' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.data_analyse_lesson', lesson_id=4) }}" class="btn-lesson btn-lesson-primary"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='data-analyse', lesson_id=4) }}" class="btn-lesson btn-lesson-outline"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       THEME 2 — MARKETING DIGITAL
+  ══════════════════════════════════════════════ -->
+  <section class="theme-section active" id="sec-marketing">
+    <div class="theme-header" style="border-color:#ec4899;">
+      <div class="th-icon" style="background:linear-gradient(135deg,#ec4899,#f43f5e);">
+        <i class="fas fa-bullhorn"></i>
+      </div>
+      <div>
+        <h2>Marketing Digital</h2>
+        <p>{{ 'From zero to expert: SEO, Google Ads, Social Media and Analytics' if is_en else 'De zéro à expert : SEO, Google Ads, Réseaux sociaux et Analytics' }}</p>
+      </div>
+    </div>
+
+    <div class="objectives-box" style="border-color:#ec4899;">
+      <h4><i class="fas fa-bullseye me-2" style="color:#ec4899;"></i>{{ 'Learning objectives' if is_en else 'Objectifs d\'apprentissage' }}</h4>
+      <ul>
+        <li>{{ 'Master the fundamentals of digital marketing and the AIDA funnel' if is_en else 'Maîtriser les fondamentaux du marketing digital et le funnel AIDA' }}</li>
+        <li>{{ 'Optimize a website for organic search (SEO On-Page, Off-Page, Technical)' if is_en else 'Optimiser un site web pour le référencement naturel (SEO On-Page, Off-Page, Technique)' }}</li>
+        <li>{{ 'Create and manage profitable Google Ads campaigns' if is_en else 'Créer et gérer des campagnes Google Ads rentables' }}</li>
+        <li>{{ 'Build a social media strategy adapted to each platform' if is_en else 'Construire une stratégie réseaux sociaux adaptée à chaque plateforme' }}</li>
+        <li>{{ 'Measure and analyze performance with Google Analytics 4' if is_en else 'Mesurer et analyser les performances avec Google Analytics 4' }}</li>
+      </ul>
+    </div>
+
+    <div class="lessons-grid">
+      <!-- Leçon 1 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#ec4899,#f43f5e);">1</div>
+        <div class="lc-body">
+          <h3>{{ "Digital Marketing Fundamentals" if is_en else "Fondamentaux du Marketing Digital" }}</h3>
+          <p class="lc-desc">
+            {{ 'Understand the pillars of digital marketing (SEO, SEA, SMM, Email, Content), the AIDA funnel and essential KPIs. Learn the difference between B2B and B2C.' if is_en else 'Comprenez les piliers du marketing digital (SEO, SEA, SMM, Email, Content), le funnel AIDA et les KPIs essentiels. Apprenez la différence entre B2B et B2C.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>50 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-green">{{ 'Beginner' if is_en else 'Débutant' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Theory' if is_en else 'Théorie' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.marketing_digital_lesson', lesson_id=1) }}" class="btn-lesson btn-lesson-pink"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='marketing-digital', lesson_id=1) }}" class="btn-lesson btn-lesson-outline-pink"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leçon 2 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#ec4899,#f43f5e);">2</div>
+        <div class="lc-body">
+          <h3>{{ "SEO: Search Engine Optimization" if is_en else "SEO : Référencement Naturel" }}</h3>
+          <p class="lc-desc">
+            {{ 'Master the 3 pillars of SEO (Technical, On-Page, Off-Page). Learn keyword research, search intent types, and how to rank on Google for free.' if is_en else 'Maîtrisez les 3 piliers du SEO (Technique, On-Page, Off-Page). Apprenez la recherche de mots-clés, les types d\'intention de recherche et comment se positionner gratuitement sur Google.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>70 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Practical' if is_en else 'Pratique' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.marketing_digital_lesson', lesson_id=2) }}" class="btn-lesson btn-lesson-pink"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='marketing-digital', lesson_id=2) }}" class="btn-lesson btn-lesson-outline-pink"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leçon 3 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#ec4899,#f43f5e);">3</div>
+        <div class="lc-body">
+          <h3>{{ "Google Ads & Paid Advertising" if is_en else "Google Ads & Publicité Payante" }}</h3>
+          <p class="lc-desc">
+            {{ 'Learn to create profitable campaigns: campaign types, account structure, Quality Score, bid strategies and A/B testing. Get instant qualified traffic.' if is_en else 'Apprenez à créer des campagnes rentables : types de campagnes, structure du compte, Quality Score, stratégies d\'enchères et A/B testing. Obtenez du trafic qualifié instantanément.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>65 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Practice' if is_en else 'Pratique' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.marketing_digital_lesson', lesson_id=3) }}" class="btn-lesson btn-lesson-pink"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='marketing-digital', lesson_id=3) }}" class="btn-lesson btn-lesson-outline-pink"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leçon 4 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#ec4899,#f43f5e);">4</div>
+        <div class="lc-body">
+          <h3>Social Media Marketing</h3>
+          <p class="lc-desc">
+            {{ 'Master social media for your business: platform comparison (Instagram, TikTok, LinkedIn, Facebook), the 80/20 rule, best content types, algorithms and publication calendars.' if is_en else 'Maîtrisez les réseaux sociaux pour votre business : comparatif des plateformes (Instagram, TikTok, LinkedIn, Facebook), la règle 80/20, les meilleurs types de contenu, les algorithmes et calendriers de publication.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>60 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Strategy' if is_en else 'Stratégie' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.marketing_digital_lesson', lesson_id=4) }}" class="btn-lesson btn-lesson-pink"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='marketing-digital', lesson_id=4) }}" class="btn-lesson btn-lesson-outline-pink"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leçon 5 -->
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#ec4899,#f43f5e);">5</div>
+        <div class="lc-body">
+          <h3>{{ "Analytics & Performance Measurement" if is_en else "Analytics & Mesure de Performance" }}</h3>
+          <p class="lc-desc">
+            {{ 'Master Google Analytics 4: key metrics, traffic sources, conversion setup, UTM parameters and dashboard creation. Because what gets measured gets improved.' if is_en else 'Maîtrisez Google Analytics 4 : métriques clés, sources de trafic, configuration des conversions, paramètres UTM et création de tableaux de bord. Car ce qui se mesure s\'améliore.' }}
+          </p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>55 min</span>
+            <span><i class="fas fa-question-circle"></i>3 questions</span>
+          </div>
+          <div class="lc-tags">
+            <span class="lc-tag lc-tag-red">{{ 'Advanced' if is_en else 'Avancé' }}</span>
+            <span class="lc-tag lc-tag-blue">{{ 'Tools + Practice' if is_en else 'Outils + Pratique' }}</span>
+          </div>
+          <div class="lc-actions">
+            <a href="{{ url_for('education.marketing_digital_lesson', lesson_id=5) }}" class="btn-lesson btn-lesson-pink"><i class="fas fa-play"></i>{{ 'Start' if is_en else 'Commencer' }}</a>
+            <a href="{{ url_for('education.course_quiz', course='marketing-digital', lesson_id=5) }}" class="btn-lesson btn-lesson-outline-pink"><i class="fas fa-tasks"></i>Quiz</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       THEME 3 — TECHNOLOGIE & INFORMATIQUE
+  ══════════════════════════════════════════════ -->
+  <section class="theme-section active" id="sec-techno">
+    <div class="theme-header" style="border-color:#38b2ac;">
+      <div class="th-icon" style="background:linear-gradient(135deg,#38b2ac,#319795);">
+        <i class="fas fa-microchip"></i>
+      </div>
+      <div>
+        <h2>{{ 'Technology & Computer Science' if is_en else 'Technologie & Informatique' }}</h2>
+        <p>{{ 'AI, web development, cybersecurity, cloud — Beginner to Advanced path' if is_en else 'IA, développement web, cybersécurité, cloud — parcours Débutant à Avancé' }}</p>
+      </div>
+    </div>
+
+    <div class="objectives-box" style="border-color:#38b2ac;">
+      <h4><i class="fas fa-bullseye me-2" style="color:#38b2ac;"></i>{{ 'Learning objectives' if is_en else 'Objectifs d\'apprentissage' }}</h4>
+      <ul>
+        <li>{{ 'Understand the fundamentals of programming and web development (HTML, CSS, JS, Python)' if is_en else 'Comprendre les fondamentaux de la programmation et du développement web (HTML, CSS, JS, Python)' }}</li>
+        <li>{{ 'Discover artificial intelligence and its concrete applications' if is_en else 'Découvrir l\'intelligence artificielle et ses applications concrètes' }}</li>
+        <li>{{ 'Learn the basics of cybersecurity and data protection' if is_en else 'Apprendre les bases de la cybersécurité et la protection des données' }}</li>
+        <li>{{ 'Understand cloud computing (AWS, Azure, GCP) and DevOps' if is_en else 'Comprendre le cloud computing (AWS, Azure, GCP) et le DevOps' }}</li>
+      </ul>
+    </div>
+
+    <div class="lessons-grid">
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#38b2ac,#319795);">1</div>
+        <div class="lc-body">
+          <h3>{{ "Introduction to Programming" if is_en else "Introduction à la Programmation" }}</h3>
+          <p class="lc-desc">{{ 'Discover the basics of programming: variables, loops, conditions, functions. Practical examples in Python to get started quickly.' if is_en else 'Découvrez les bases de la programmation : variables, boucles, conditions, fonctions. Exemples pratiques en Python pour démarrer rapidement.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>45 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Beginner' if is_en else 'Débutant' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-green">{{ 'Beginner' if is_en else 'Débutant' }}</span><span class="lc-tag lc-tag-blue">Python</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('technologie.technologie') }}" class="btn-lesson btn-lesson-teal"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#38b2ac,#319795);">2</div>
+        <div class="lc-body">
+          <h3>{{ "Web Development — HTML, CSS, JavaScript" if is_en else "Développement Web — HTML, CSS, JavaScript" }}</h3>
+          <p class="lc-desc">{{ 'Build your first web pages: HTML structure, CSS styling, and JavaScript interactivity. From static page to dynamic application.' if is_en else 'Construisez vos premières pages web : structure HTML, style CSS et interactivité JavaScript. De la page statique à l\'application dynamique.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>60 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Beginner' if is_en else 'Débutant' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-green">{{ 'Beginner' if is_en else 'Débutant' }}</span><span class="lc-tag lc-tag-blue">Frontend</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('technologie.technologie') }}" class="btn-lesson btn-lesson-teal"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#38b2ac,#319795);">3</div>
+        <div class="lc-body">
+          <h3>{{ "Artificial Intelligence & Machine Learning" if is_en else "Intelligence Artificielle & Machine Learning" }}</h3>
+          <p class="lc-desc">{{ 'Understand AI concepts: supervised/unsupervised learning, neural networks, NLP. Practical use cases with real-world applications.' if is_en else 'Comprenez les concepts de l\'IA : apprentissage supervisé/non supervisé, réseaux de neurones, NLP. Cas d\'usage pratiques avec applications concrètes.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>70 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span><span class="lc-tag lc-tag-blue">IA / ML</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('technologie.technologie') }}" class="btn-lesson btn-lesson-teal"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#38b2ac,#319795);">4</div>
+        <div class="lc-body">
+          <h3>{{ "Cybersecurity — Protect Your Data" if is_en else "Cybersécurité — Protéger ses Données" }}</h3>
+          <p class="lc-desc">{{ 'Learn about the most common threats (phishing, ransomware, SQL injection), defense techniques and security best practices for companies and individuals.' if is_en else 'Découvrez les menaces les plus courantes (phishing, ransomware, injection SQL), les techniques de défense et les bonnes pratiques de sécurité pour entreprises et particuliers.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>55 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span><span class="lc-tag lc-tag-blue">{{ 'Security' if is_en else 'Sécurité' }}</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('technologie.technologie') }}" class="btn-lesson btn-lesson-teal"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#38b2ac,#319795);">5</div>
+        <div class="lc-body">
+          <h3>{{ "Cloud Computing & DevOps" if is_en else "Cloud Computing & DevOps" }}</h3>
+          <p class="lc-desc">{{ 'Understand cloud services (IaaS, PaaS, SaaS), compare AWS/Azure/GCP, and discover CI/CD, Docker, and Kubernetes for modern deployment.' if is_en else 'Comprenez les services cloud (IaaS, PaaS, SaaS), comparez AWS/Azure/GCP, et découvrez le CI/CD, Docker et Kubernetes pour le déploiement moderne.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>65 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Advanced' if is_en else 'Avancé' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-red">{{ 'Advanced' if is_en else 'Avancé' }}</span><span class="lc-tag lc-tag-blue">Cloud / DevOps</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('technologie.technologie') }}" class="btn-lesson btn-lesson-teal"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       THEME 4 — BUSINESS MANAGEMENT
+  ══════════════════════════════════════════════ -->
+  <section class="theme-section active" id="sec-business">
+    <div class="theme-header" style="border-color:#d69e2e;">
+      <div class="th-icon" style="background:linear-gradient(135deg,#d69e2e,#b7791f);">
+        <i class="fas fa-briefcase"></i>
+      </div>
+      <div>
+        <h2>Business Management</h2>
+        <p>{{ 'Leadership, strategy, project management and entrepreneurship' if is_en else 'Leadership, stratégie, gestion de projets et entrepreneuriat' }}</p>
+      </div>
+    </div>
+
+    <div class="objectives-box" style="border-color:#d69e2e;">
+      <h4><i class="fas fa-bullseye me-2" style="color:#d69e2e;"></i>{{ 'Learning objectives' if is_en else 'Objectifs d\'apprentissage' }}</h4>
+      <ul>
+        <li>{{ 'Master project management methodologies (Agile, Scrum, Kanban, Waterfall)' if is_en else 'Maîtriser les méthodologies de gestion de projets (Agile, Scrum, Kanban, Waterfall)' }}</li>
+        <li>{{ 'Develop leadership and team management skills' if is_en else 'Développer ses compétences en leadership et gestion d\'équipe' }}</li>
+        <li>{{ 'Create a solid business plan and financial strategy' if is_en else 'Créer un business plan solide et une stratégie financière' }}</li>
+        <li>{{ 'Understand negotiation fundamentals and professional communication' if is_en else 'Comprendre les fondamentaux de la négociation et de la communication professionnelle' }}</li>
+      </ul>
+    </div>
+
+    <div class="lessons-grid">
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#d69e2e,#b7791f);">1</div>
+        <div class="lc-body">
+          <h3>{{ "Entrepreneurship & Business Plan" if is_en else "Entrepreneuriat & Business Plan" }}</h3>
+          <p class="lc-desc">{{ 'Learn to validate a business idea, write a business plan, define your value proposition and build a viable business model (Business Model Canvas).' if is_en else 'Apprenez à valider une idée business, rédiger un business plan, définir votre proposition de valeur et construire un modèle économique viable (Business Model Canvas).' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>50 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Beginner' if is_en else 'Débutant' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-green">{{ 'Beginner' if is_en else 'Débutant' }}</span><span class="lc-tag lc-tag-blue">{{ 'Strategy' if is_en else 'Stratégie' }}</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('business.business_index') }}" class="btn-lesson btn-lesson-amber"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#d69e2e,#b7791f);">2</div>
+        <div class="lc-body">
+          <h3>{{ "Project Management — Agile & Scrum" if is_en else "Gestion de Projet — Agile & Scrum" }}</h3>
+          <p class="lc-desc">{{ 'Compare Waterfall vs Agile, master Scrum (sprints, daily standups, retrospectives), use Kanban, and learn essential tools (Jira, Trello, Notion).' if is_en else 'Comparez Waterfall vs Agile, maîtrisez Scrum (sprints, daily standups, rétrospectives), utilisez Kanban et découvrez les outils essentiels (Jira, Trello, Notion).' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>60 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span><span class="lc-tag lc-tag-blue">Agile / Scrum</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('business.business_index') }}" class="btn-lesson btn-lesson-amber"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#d69e2e,#b7791f);">3</div>
+        <div class="lc-body">
+          <h3>{{ "Leadership & Team Management" if is_en else "Leadership & Management d'Équipe" }}</h3>
+          <p class="lc-desc">{{ 'Develop your leadership style, learn to motivate and manage a team, handle conflicts and drive performance through clear communication.' if is_en else 'Développez votre style de leadership, apprenez à motiver et gérer une équipe, résolvez les conflits et stimulez la performance par une communication claire.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>55 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span><span class="lc-tag lc-tag-blue">{{ 'Soft Skills' if is_en else 'Soft Skills' }}</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('business.business_index') }}" class="btn-lesson btn-lesson-amber"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#d69e2e,#b7791f);">4</div>
+        <div class="lc-body">
+          <h3>{{ "Finance & Accounting for Entrepreneurs" if is_en else "Finance & Comptabilité pour Entrepreneurs" }}</h3>
+          <p class="lc-desc">{{ 'Understand financial statements (P&L, balance sheet, cash flow), calculate profitability, manage budgets, and make data-driven financial decisions.' if is_en else 'Comprenez les états financiers (compte de résultat, bilan, flux de trésorerie), calculez la rentabilité, gérez les budgets et prenez des décisions financières basées sur les données.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>65 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Advanced' if is_en else 'Avancé' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-red">{{ 'Advanced' if is_en else 'Avancé' }}</span><span class="lc-tag lc-tag-blue">{{ 'Finance' if is_en else 'Finance' }}</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('business.business_index') }}" class="btn-lesson btn-lesson-amber"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       THEME 5 — CRÉATIVITÉ & DESIGN
+  ══════════════════════════════════════════════ -->
+  <section class="theme-section active" id="sec-creative">
+    <div class="theme-header" style="border-color:#9f7aea;">
+      <div class="th-icon" style="background:linear-gradient(135deg,#9f7aea,#805ad5);">
+        <i class="fas fa-palette"></i>
+      </div>
+      <div>
+        <h2>{{ 'Creativity & Design' if is_en else 'Créativité & Design' }}</h2>
+        <p>{{ 'UX/UI design, graphic creation, branding and visual content strategy' if is_en else 'Design UX/UI, création graphique, branding et stratégie de contenu visuel' }}</p>
+      </div>
+    </div>
+
+    <div class="objectives-box" style="border-color:#9f7aea;">
+      <h4><i class="fas fa-bullseye me-2" style="color:#9f7aea;"></i>{{ 'Learning objectives' if is_en else 'Objectifs d\'apprentissage' }}</h4>
+      <ul>
+        <li>{{ 'Master the principles of UX/UI design (user research, wireframes, prototyping)' if is_en else 'Maîtriser les principes du design UX/UI (recherche utilisateur, wireframes, prototypage)' }}</li>
+        <li>{{ 'Create professional visual content with modern tools (Figma, Canva, Adobe)' if is_en else 'Créer du contenu visuel professionnel avec les outils modernes (Figma, Canva, Adobe)' }}</li>
+        <li>{{ 'Understand color theory, typography and visual composition' if is_en else 'Comprendre la théorie des couleurs, la typographie et la composition visuelle' }}</li>
+        <li>{{ 'Build a consistent brand identity (logo, palette, guidelines)' if is_en else 'Construire une identité de marque cohérente (logo, palette, guidelines)' }}</li>
+      </ul>
+    </div>
+
+    <div class="lessons-grid">
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#9f7aea,#805ad5);">1</div>
+        <div class="lc-body">
+          <h3>{{ "UX/UI Design Fundamentals" if is_en else "Fondamentaux du Design UX/UI" }}</h3>
+          <p class="lc-desc">{{ 'Learn the difference between UX and UI, the design thinking process, user personas, wireframing and usability testing. Create user-centered experiences.' if is_en else 'Apprenez la différence entre UX et UI, le processus de design thinking, les personas utilisateurs, le wireframing et les tests d\'utilisabilité. Créez des expériences centrées sur l\'utilisateur.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>55 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Beginner' if is_en else 'Débutant' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-green">{{ 'Beginner' if is_en else 'Débutant' }}</span><span class="lc-tag lc-tag-blue">UX / UI</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('creativity.creativity_index') }}" class="btn-lesson" style="background:linear-gradient(135deg,#9f7aea,#805ad5);color:#fff;border:none;"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#9f7aea,#805ad5);">2</div>
+        <div class="lc-body">
+          <h3>{{ "Color Theory & Typography" if is_en else "Théorie des Couleurs & Typographie" }}</h3>
+          <p class="lc-desc">{{ 'Understand the psychology of colors, create harmonious palettes, choose the right fonts and master visual hierarchy to make your designs impactful.' if is_en else 'Comprenez la psychologie des couleurs, créez des palettes harmonieuses, choisissez les bonnes polices et maîtrisez la hiérarchie visuelle pour rendre vos designs percutants.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>45 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Beginner' if is_en else 'Débutant' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-green">{{ 'Beginner' if is_en else 'Débutant' }}</span><span class="lc-tag lc-tag-blue">{{ 'Theory' if is_en else 'Théorie' }}</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('creativity.creativity_index') }}" class="btn-lesson" style="background:linear-gradient(135deg,#9f7aea,#805ad5);color:#fff;border:none;"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#9f7aea,#805ad5);">3</div>
+        <div class="lc-body">
+          <h3>{{ "Graphic Design with Figma & Canva" if is_en else "Création Graphique avec Figma & Canva" }}</h3>
+          <p class="lc-desc">{{ 'Master the most popular tools: Figma for professional UI design, Canva for quick marketing visuals. Step-by-step tutorials from zero.' if is_en else 'Maîtrisez les outils les plus populaires : Figma pour le design UI professionnel, Canva pour les visuels marketing rapides. Tutoriels étape par étape en partant de zéro.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>70 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-orange">{{ 'Intermediate' if is_en else 'Intermédiaire' }}</span><span class="lc-tag lc-tag-blue">Figma / Canva</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('creativity.creativity_index') }}" class="btn-lesson" style="background:linear-gradient(135deg,#9f7aea,#805ad5);color:#fff;border:none;"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-card">
+        <div class="lc-num" style="background:linear-gradient(135deg,#9f7aea,#805ad5);">4</div>
+        <div class="lc-body">
+          <h3>{{ "Branding & Visual Identity" if is_en else "Branding & Identité Visuelle" }}</h3>
+          <p class="lc-desc">{{ 'Build a memorable brand: logo creation, color palette, brand guidelines, tone of voice. Everything you need for a consistent and professional image.' if is_en else 'Construisez une marque mémorable : création de logo, palette de couleurs, charte graphique, tone of voice. Tout pour une image cohérente et professionnelle.' }}</p>
+          <div class="lc-meta">
+            <span><i class="fas fa-clock"></i>60 min</span>
+            <span><i class="fas fa-signal"></i>{{ 'Advanced' if is_en else 'Avancé' }}</span>
+          </div>
+          <div class="lc-tags"><span class="lc-tag lc-tag-red">{{ 'Advanced' if is_en else 'Avancé' }}</span><span class="lc-tag lc-tag-blue">Branding</span></div>
+          <div class="lc-actions">
+            <a href="{{ url_for('creativity.creativity_index') }}" class="btn-lesson" style="background:linear-gradient(135deg,#9f7aea,#805ad5);color:#fff;border:none;"><i class="fas fa-play"></i>{{ 'Explore' if is_en else 'Explorer' }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═════════════════ FILTER JS ═════════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tabs = document.querySelectorAll('.theme-tab');
+  const sections = document.querySelectorAll('.theme-section');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const target = this.dataset.target;
+
+      if (target === 'all') {
+        sections.forEach(s => s.classList.add('active'));
+      } else {
+        sections.forEach(s => s.classList.remove('active'));
+        const map = { data: 'sec-data', marketing: 'sec-marketing', techno: 'sec-techno', business: 'sec-business', creative: 'sec-creative' };
+        const el = document.getElementById(map[target]);
+        if (el) el.classList.add('active');
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

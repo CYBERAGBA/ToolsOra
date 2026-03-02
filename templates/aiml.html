@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}AI/ML - Content Generation{% endblock %}
+
+{% block content %}
+<main style="max-width:1200px; margin:40px auto; padding:0 20px">
+  <div class="card">
+    <h2>🤖 AI/ML Content Generation</h2>
+    <p class="small muted">Génération automatique de contenu avec les meilleurs IA: ChatGPT, Claude, Gemini</p>
+    
+    <!-- TABS -->
+    <div class="nav-tabs" style="margin-top:20px;">
+      <button class="btn-tab active" onclick="switchTab(event, 'generate')">✍️ Générer Contenu</button>
+      <button class="btn-tab" onclick="switchTab(event, 'summarize')">📄 Résumer</button>
+      <button class="btn-tab" onclick="switchTab(event, 'translate')">🌍 Traduire</button>
+      <button class="btn-tab" onclick="switchTab(event, 'classify')">🏷️ Classifier</button>
+      <button class="btn-tab" onclick="switchTab(event, 'correct')">✏️ Corriger</button>
+    </div>
+
+    <!-- TAB 1: GENERATE CONTENT -->
+    <div id="generate" class="tab-pane active">
+      <h3>✍️ Générer du Contenu</h3>
+      <form id="generateForm">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+          <div>
+            <label>Type de contenu:</label>
+            <select id="contentType">
+              <option value="article">Article Blog</option>
+              <option value="email">Email Marketing</option>
+              <option value="social_post">Post Social Media</option>
+              <option value="product_desc">Description Produit</option>
+              <option value="course_lesson">Leçon de Cours</option>
+            </select>
+          </div>
+          <div>
+            <label>Sujet:</label>
+            <input type="text" id="topic" placeholder="Ex: L'IA en éducation" required>
+          </div>
+          <div>
+            <label>Ton:</label>
+            <select id="tone">
+              <option value="professional">Professionnel</option>
+              <option value="casual">Décontracté</option>
+              <option value="formal">Formel</option>
+              <option value="friendly">Amical</option>
+            </select>
+          </div>
+          <div>
+            <label>Longueur:</label>
+            <select id="length">
+              <option value="short">Court (200-300 mots)</option>
+              <option value="medium">Moyen (500-700 mots)</option>
+              <option value="long">Long (1000+ mots)</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:15px;">
+          <label>Contexte additionnel:</label>
+          <textarea id="context" placeholder="Informations supplémentaires..." style="width:100%; height:80px;"></textarea>
+        </div>
+        <button type="button" onclick="generateContent()" class="btn btn-primary" style="margin-top:15px;">
+          Générer (IA)
+        </button>
+      </form>
+      <div id="generateResult" style="margin-top:20px; display:none;"></div>
+    </div>
+
+    <!-- TAB 2: SUMMARIZE -->
+    <div id="summarize" class="tab-pane">
+      <h3>📄 Résumer un Texte</h3>
+      <div>
+        <label>Texte à résumer:</label>
+        <textarea id="textToSummarize" style="width:100%; height:150px;" placeholder="Collez votre texte ici..."></textarea>
+        <div style="margin-top:10px;">
+          <label>
+            <input type="checkbox" id="bulletPoints"> Points à puces
+          </label>
+        </div>
+        <button type="button" onclick="summarizeText()" class="btn btn-primary" style="margin-top:10px;">
+          Résumer
+        </button>
+      </div>
+      <div id="summarizeResult" style="margin-top:20px; display:none;"></div>
+    </div>
+
+    <!-- TAB 3: TRANSLATE -->
+    <div id="translate" class="tab-pane">
+      <h3>🌍 Traduire</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div>
+          <label>De:</label>
+          <select id="sourceLang">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+        <div>
+          <label>Vers:</label>
+          <select id="targetLang">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </div>
+      <textarea id="textToTranslate" placeholder="Texte à traduire..." style="width:100%; height:120px; margin-top:10px;"></textarea>
+      <button type="button" onclick="translateText()" class="btn btn-primary" style="margin-top:10px;">
+        Traduire
+      </button>
+      <div id="translateResult" style="margin-top:20px; display:none;"></div>
+    </div>
+
+    <!-- TAB 4: CLASSIFY -->
+    <div id="classify" class="tab-pane">
+      <h3>🏷️ Classifier</h3>
+      <div>
+        <label>Type de classification:</label>
+        <select id="classifyType">
+          <option value="sentiment">Sentiment (Positif/Négatif)</option>
+          <option value="spam">Spam Detection</option>
+          <option value="priority">Priorité (LOW/MEDIUM/HIGH)</option>
+          <option value="intent">Intention (Question/Achat/Feedback)</option>
+        </select>
+      </div>
+      <textarea id="textToClassify" placeholder="Texte à classifier..." style="width:100%; height:120px; margin-top:10px;"></textarea>
+      <button type="button" onclick="classifyText()" class="btn btn-primary" style="margin-top:10px;">
+        Classifier
+      </button>
+      <div id="classifyResult" style="margin-top:20px; display:none;"></div>
+    </div>
+
+    <!-- TAB 5: CORRECT -->
+    <div id="correct" class="tab-pane">
+      <h3>✏️ Corriger Grammaire & Style</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div>
+          <label>Langue:</label>
+          <select id="correctLang">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div>
+          <label>Style:</label>
+          <select id="correctStyle">
+            <option value="professional">Professionnel</option>
+            <option value="casual">Décontracté</option>
+            <option value="academic">Académique</option>
+          </select>
+        </div>
+      </div>
+      <textarea id="textToCorrect" placeholder="Texte à corriger..." style="width:100%; height:120px; margin-top:10px;"></textarea>
+      <button type="button" onclick="correctText()" class="btn btn-primary" style="margin-top:10px;">
+        Corriger
+      </button>
+      <div id="correctResult" style="margin-top:20px; display:none;"></div>
+    </div>
+
+  </div>
+</main>
+
+<style>
+  .nav-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    flex-wrap: wrap;
+  }
+  .btn-tab {
+    background: none;
+    border: none;
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s;
+  }
+  .btn-tab:hover {
+    color: #333;
+  }
+  .btn-tab.active {
+    border-bottom-color: #007bff;
+    color: #007bff;
+  }
+  .tab-pane {
+    display: none;
+    padding: 20px 0;
+  }
+  .tab-pane.active {
+    display: block;
+  }
+  .tab-pane input, .tab-pane textarea, .tab-pane select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+  }
+  .tab-pane textarea {
+    resize: vertical;
+  }
+  #generateResult, #summarizeResult, #translateResult, #classifyResult, #correctResult {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+    color: #333;
+  }
+  #generateResult h4, #summarizeResult h4, #translateResult h4, #classifyResult h4, #correctResult h4 {
+    color: #007bff;
+    margin-top: 0;
+  }
+  #generateResult p, #generateResult strong,
+  #summarizeResult p, #summarizeResult strong,
+  #translateResult p, #translateResult strong,
+  #classifyResult p, #classifyResult strong,
+  #correctResult p, #correctResult strong {
+    color: #333;
+  }
+</style>
+
+<script>
+  function switchTab(event, tabName) {
+    event.preventDefault();
+    
+    // Hide all tabs
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelectorAll('.btn-tab').forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  async function generateContent() {
+    const data = {
+      content_type: document.getElementById('contentType').value,
+      topic: document.getElementById('topic').value,
+      tone: document.getElementById('tone').value,
+      length: document.getElementById('length').value,
+      language: 'fr',
+      additional_context: document.getElementById('context').value || undefined
+    };
+
+    try {
+      const response = await fetch('/modules/aiml/generate-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('generateResult').innerHTML = `
+          <h4>✅ Contenu généré:</h4>
+          <p>${result.content.replace(/\n/g, '<br>')}</p>
+        `;
+        document.getElementById('generateResult').style.display = 'block';
+      } else {
+        alert('Erreur: ' + result.error);
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function summarizeText() {
+    const data = {
+      text: document.getElementById('textToSummarize').value,
+      bullet_points: document.getElementById('bulletPoints').checked,
+      language: 'fr'
+    };
+
+    try {
+      const response = await fetch('/modules/aiml/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('summarizeResult').innerHTML = `
+          <h4>✅ Résumé:</h4>
+          <p>${result.summary.replace(/\n/g, '<br>')}</p>
+        `;
+        document.getElementById('summarizeResult').style.display = 'block';
+      } else {
+        alert('Erreur: ' + result.error);
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function translateText() {
+    const data = {
+      text: document.getElementById('textToTranslate').value,
+      source_language: document.getElementById('sourceLang').value,
+      target_language: document.getElementById('targetLang').value
+    };
+
+    try {
+      const response = await fetch('/modules/aiml/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('translateResult').innerHTML = `
+          <h4>✅ Traduction:</h4>
+          <p>${result.translated}</p>
+        `;
+        document.getElementById('translateResult').style.display = 'block';
+      } else {
+        alert('Erreur: ' + result.error);
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function classifyText() {
+    const data = {
+      text: document.getElementById('textToClassify').value,
+      classification_type: document.getElementById('classifyType').value
+    };
+
+    try {
+      const response = await fetch('/modules/aiml/classify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('classifyResult').innerHTML = `
+          <h4>✅ Résultat:</h4>
+          <p><strong>${result.result}</strong></p>
+        `;
+        document.getElementById('classifyResult').style.display = 'block';
+      } else {
+        alert('Erreur: ' + result.error);
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
+  async function correctText() {
+    const data = {
+      text: document.getElementById('textToCorrect').value,
+      language: document.getElementById('correctLang').value,
+      style: document.getElementById('correctStyle').value
+    };
+
+    try {
+      const response = await fetch('/modules/aiml/correct-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        document.getElementById('correctResult').innerHTML = `
+          <h4>✅ Texte corrigé:</h4>
+          <p>${result.corrected.replace(/\n/g, '<br>')}</p>
+        `;
+        document.getElementById('correctResult').style.display = 'block';
+      } else {
+        alert('Erreur: ' + result.error);
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Virtual environments
+.venv/
+.venv-*/
+
+# Local secrets
+.env
+
+# Local runtime data
+logs/
+app/modules/saas/uploads/
+
+# OS / editor
+.vscode/
+.DS_Store
+Thumbs.db

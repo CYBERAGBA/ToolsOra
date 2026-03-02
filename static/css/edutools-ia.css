@@ -1,0 +1,558 @@
+/**
+ * EduTools-IA - Styles du bouton flottant et modale
+ */
+
+/* ============ BOUTON FLOTTANT ============ */
+
+#edutools-ia-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9998;
+  font-family: 'Inter', sans-serif;
+}
+
+.ia-button-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ia-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  animation: float 3s ease-in-out infinite;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ia-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+}
+
+.ia-button:active {
+  transform: scale(0.95);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.ia-button-pulse {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    width: 60px;
+    height: 60px;
+    opacity: 1;
+  }
+  100% {
+    width: 90px;
+    height: 90px;
+    opacity: 0;
+  }
+}
+
+.ia-label {
+  position: absolute;
+  bottom: -25px;
+  right: 0;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: #667eea;
+  background: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  opacity: 0;
+  animation: labelFade 0.3s ease forwards;
+}
+
+@keyframes labelFade {
+  to { opacity: 1; }
+}
+
+/* ============ MODALE ============ */
+
+#edutools-ia-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+#edutools-ia-modal.ia-hidden {
+  display: none;
+  animation: fadeOut 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.ia-modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.ia-header {
+  padding: 20px;
+  border-bottom: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ia-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ia-title h2 {
+  font-size: 20px;
+  color: #333;
+  margin: 0;
+}
+
+.ia-title .ia-icon {
+  font-size: 24px;
+}
+
+.ia-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+}
+
+.ia-close:hover {
+  color: #333;
+}
+
+/* Context Banner */
+.ia-context-banner {
+  padding: 12px 20px;
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-left: 4px solid #667eea;
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+
+/* Menu des 3 pouvoirs */
+.ia-menu {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ia-power-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  background: #f8f8f8;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.ia-power-btn:hover {
+  background: #f0f0f0;
+  border-color: #667eea;
+  transform: translateX(5px);
+}
+
+.ia-power-btn.active {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-color: #667eea;
+}
+
+.ia-power-btn .icon {
+  font-size: 20px;
+  min-width: 25px;
+}
+
+.ia-power-btn div {
+  flex: 1;
+}
+
+.ia-power-btn strong {
+  display: block;
+  color: #333;
+  font-size: 13px;
+}
+
+.ia-power-btn small {
+  display: block;
+  color: #999;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+/* Contenu dynamique */
+.ia-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+/* Panel styles */
+.ia-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ia-panel h3 {
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+}
+
+.ia-panel h4 {
+  font-size: 13px;
+  color: #555;
+  margin: 10px 0 5px 0;
+}
+
+.ia-panel p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Progress sections */
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-block {
+  background: #f8f8f8;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #999;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.stat-bar {
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width 0.3s ease;
+}
+
+/* Recommendation box */
+.recommendation-box {
+  background: #f0f7ff;
+  padding: 12px;
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.recommendation-box p {
+  margin: 0 0 8px 0;
+}
+
+.rec-link {
+  display: inline-block;
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 6px 10px;
+  background: white;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.rec-link:hover {
+  background: #667eea;
+  color: white;
+}
+
+.new-tool {
+  background: white;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 8px 0;
+  border: 2px solid #667eea;
+}
+
+.new-tool strong {
+  color: #667eea;
+}
+
+.new-tool small {
+  display: block;
+  color: #999;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+/* Divider */
+.ia-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 10px 0;
+}
+
+/* Sandbox */
+.sandbox-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sandbox-section label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.sandbox-section textarea,
+.sandbox-section select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.sandbox-section textarea:focus,
+.sandbox-section select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.language-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Sandbox output */
+.sandbox-output {
+  background: #f8f8f8;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.sandbox-output.ia-hidden {
+  display: none;
+}
+
+.output-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.sandbox-output pre {
+  background: #2d2d2d;
+  color: #f8f8f2;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  overflow-x: auto;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  font-family: 'Courier New', monospace;
+}
+
+/* Report */
+.report-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.data-type {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.report-output {
+  background: #f0f7ff;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.report-output.ia-hidden {
+  display: none;
+}
+
+.report-preview {
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.report-preview h4 {
+  margin-top: 0;
+}
+
+.report-preview ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.report-preview li {
+  margin: 4px 0;
+}
+
+/* Action buttons */
+.ia-action-btn,
+.copy-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ia-action-btn:hover,
+.copy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.copy-btn.secondary {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  margin-top: 8px;
+}
+
+.copy-btn.secondary:hover {
+  background: #f0f0f0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  #edutools-ia-button {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .ia-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .ia-button-pulse {
+    width: 50px;
+    height: 50px;
+  }
+
+  .ia-modal-content {
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+
+  .ia-title h2 {
+    font-size: 16px;
+  }
+
+  .ia-label {
+    display: none;
+  }
+}

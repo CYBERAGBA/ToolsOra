@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+  <h2>{{ '🌍 Currency Converter' if is_en else '🌍 Convertisseur de Devise' }}</h2>
+  <p class="small muted">{{ 'Instantly convert between 200+ currencies with live exchange rates.' if is_en else 'Convertissez instantanément entre plus de 200 devises avec les taux de change en direct.' }}</p>
+
+  <div class="converter-container mt-18">
+    <!-- Section Input -->
+    <div class="converter-card">
+      <h3>{{ 'Amount to convert' if is_en else 'Montant à convertir' }}</h3>
+      <div class="converter-input-group">
+        <input 
+          type="number" 
+          id="fromAmount" 
+          placeholder="{{ 'Amount' if is_en else 'Montant' }}" 
+          value="100"
+          min="0"
+        >
+        <select id="fromCurrency" title="{{ 'Source currency' if is_en else 'Devise source' }}">
+          <option value="USD">$ USD - Dollar US</option>
+          <option value="EUR" selected>€ EUR - Euro</option>
+          <option value="GBP">£ GBP - Livre Sterling</option>
+          <option value="JPY">¥ JPY - Yen Japonais</option>
+          <option value="CHF">CHF - Franc Suisse</option>
+          <option value="CAD">$ CAD - Dollar Canadien</option>
+          <option value="AUD">$ AUD - Dollar Australien</option>
+          <option value="CNY">¥ CNY - Yuan Chinois</option>
+          <option value="INR">₹ INR - Roupie Indienne</option>
+          <option value="BRL">R$ BRL - Real Brésilien</option>
+          <option value="MXN">$ MXN - Peso Mexicain</option>
+          <option value="SGD">$ SGD - Dollar Singapourien</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Swap button -->
+    <div class="converter-swap">
+      <button id="swapBtn" class="swap-button" title="{{ 'Swap currencies' if is_en else 'Échanger les devises' }}">
+        ⇄
+      </button>
+    </div>
+
+    <!-- Section Output -->
+    <div class="converter-card">
+      <h3>{{ 'Converted amount' if is_en else 'Montant converti' }}</h3>
+      <div class="converter-input-group">
+        <input 
+          type="number" 
+          id="toAmount" 
+          placeholder="{{ 'Result' if is_en else 'Résultat' }}" 
+          readonly
+          value="100"
+        >
+        <select id="toCurrency" title="{{ 'Target currency' if is_en else 'Devise cible' }}">
+          <option value="USD" selected>$ USD - Dollar US</option>
+          <option value="EUR">€ EUR - Euro</option>
+          <option value="GBP">£ GBP - Livre Sterling</option>
+          <option value="JPY">¥ JPY - Yen Japonais</option>
+          <option value="CHF">CHF - Franc Suisse</option>
+          <option value="CAD">$ CAD - Dollar Canadien</option>
+          <option value="AUD">$ AUD - Dollar Australien</option>
+          <option value="CNY">¥ CNY - Yuan Chinois</option>
+          <option value="INR">₹ INR - Roupie Indienne</option>
+          <option value="BRL">R$ BRL - Real Brésilien</option>
+          <option value="MXN">$ MXN - Peso Mexicain</option>
+          <option value="SGD">$ SGD - Dollar Singapourien</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exchange info -->
+  <div class="exchange-info">
+    <p id="exchangeRate" class="small muted">
+      {{ 'Exchange rate: Loading...' if is_en else 'Taux de change : Chargement...' }}
+    </p>
+    <p id="lastUpdated" class="small muted">
+      {{ 'Last updated: --' if is_en else 'Dernière mise à jour : --' }}
+    </p>
+  </div>
+
+  <!-- History -->
+  <hr class="ia-divider">
+  <h3>{{ '📊 Conversion history' if is_en else '📊 Historique des conversions' }}</h3>
+  <div id="conversionHistory" class="history-list">
+    <p class="small muted text-center">{{ 'No conversions yet' if is_en else 'Aucune conversion pour le moment' }}</p>
+  </div>
+
+  <!-- Favorite -->
+  <button id="saveFavorite" class="ia-action-btn mt-18">
+    {{ '⭐ Save this currency pair' if is_en else '⭐ Sauvegarder cette paire de devises' }}
+  </button>
+</div>
+
+<style>
+  .converter-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .converter-card {
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .converter-card h3 {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    color: #555;
+    font-weight: 600;
+  }
+
+  .converter-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .converter-input-group input,
+  .converter-input-group select {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: border-color 0.2s;
+  }
+
+  .converter-input-group input:focus,
+  .converter-input-group select:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .converter-swap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .swap-button {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .swap-button:hover {
+    transform: rotate(180deg) scale(1.05);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .exchange-info {
+    padding: 12px;
+    background: #f0f7ff;
+    border-left: 4px solid #667eea;
+    border-radius: 6px;
+    margin: 15px 0;
+  }
+
+  .exchange-info p {
+    margin: 5px 0;
+  }
+
+  .history-list {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .history-item {
+    background: #f8f8f8;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .history-item-left {
+    flex: 1;
+  }
+
+  .history-item-value {
+    font-weight: 600;
+    color: #667eea;
+  }
+
+  .history-item-time {
+    color: #999;
+    font-size: 11px;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .converter-container {
+      grid-template-columns: 1fr;
+    }
+
+    .converter-swap {
+      transform: rotate(90deg);
+    }
+  }
+</style>
+
+<script>
+  const isEnglish = {{ 'true' if is_en else 'false' }};
+  const localeCode = isEnglish ? 'en-US' : 'fr-FR';
+
+  class CurrencyConverter {
+    constructor() {
+      this.history = [];
+      this.exchangeRates = this.getDefaultRates();
+      this.init();
+    }
+
+    init() {
+      this.setupListeners();
+      this.convert();
+    }
+
+    /**
+     * Taux de change par défaut (simulés pour demo)
+     */
+    getDefaultRates() {
+      return {
+        EUR: 1.0,
+        USD: 1.12,
+        GBP: 0.86,
+        JPY: 150.5,
+        CHF: 0.98,
+        CAD: 1.48,
+        AUD: 1.68,
+        CNY: 8.2,
+        INR: 93.5,
+        BRL: 5.6,
+        MXN: 19.2,
+        SGD: 1.52
+      };
+    }
+
+    setupListeners() {
+      document.getElementById('fromAmount').addEventListener('input', () => this.convert());
+      document.getElementById('fromCurrency').addEventListener('change', () => this.convert());
+      document.getElementById('toCurrency').addEventListener('change', () => this.convert());
+      document.getElementById('swapBtn').addEventListener('click', () => this.swap());
+      document.getElementById('saveFavorite').addEventListener('click', () => this.saveFavorite());
+    }
+
+    convert() {
+      const fromAmount = parseFloat(document.getElementById('fromAmount').value) || 0;
+      const fromCurrency = document.getElementById('fromCurrency').value;
+      const toCurrency = document.getElementById('toCurrency').value;
+
+      if (fromAmount === 0) {
+        document.getElementById('toAmount').value = '0';
+        return;
+      }
+
+      // Conversion : EUR → autre devise
+      const fromRate = this.exchangeRates[fromCurrency] || 1;
+      const toRate = this.exchangeRates[toCurrency] || 1;
+      const result = (fromAmount / fromRate) * toRate;
+
+      document.getElementById('toAmount').value = result.toFixed(2);
+      
+      // Mettre à jour le taux affiché
+      const rate = (toRate / fromRate).toFixed(4);
+      document.getElementById('exchangeRate').textContent = 
+        isEnglish
+          ? `📊 Exchange rate: 1 ${fromCurrency} = ${rate} ${toCurrency}`
+          : `📊 Taux de change : 1 ${fromCurrency} = ${rate} ${toCurrency}`;
+      
+      // Mettre à jour l'heure
+      const now = new Date().toLocaleTimeString(localeCode);
+      document.getElementById('lastUpdated').textContent = 
+        isEnglish ? `🕐 Last updated: ${now}` : `🕐 Dernière mise à jour : ${now}`;
+
+      // Ajouter à l'historique
+      this.addToHistory(fromAmount, fromCurrency, result.toFixed(2), toCurrency);
+    }
+
+    swap() {
+      const from = document.getElementById('fromCurrency').value;
+      const to = document.getElementById('toCurrency').value;
+      document.getElementById('fromCurrency').value = to;
+      document.getElementById('toCurrency').value = from;
+      this.convert();
+    }
+
+    addToHistory(fromAmount, fromCurrency, toAmount, toCurrency) {
+      const item = { fromAmount, fromCurrency, toAmount, toCurrency, time: new Date() };
+      this.history.unshift(item);
+      if (this.history.length > 10) this.history.pop();
+      this.renderHistory();
+    }
+
+    renderHistory() {
+      const historyContainer = document.getElementById('conversionHistory');
+      if (this.history.length === 0) {
+        historyContainer.innerHTML = isEnglish
+          ? '<p class="small muted text-center">No conversions yet</p>'
+          : '<p class="small muted text-center">Aucune conversion pour le moment</p>';
+        return;
+      }
+
+      historyContainer.innerHTML = this.history.map((item, idx) => {
+        const timeStr = item.time.toLocaleTimeString(localeCode, { hour: '2-digit', minute: '2-digit' });
+        return `
+          <div class="history-item">
+            <div class="history-item-left">
+              <div class="history-item-value">
+                ${item.fromAmount} ${item.fromCurrency} → ${item.toAmount} ${item.toCurrency}
+              </div>
+              <div class="history-item-time">${timeStr}</div>
+            </div>
+            <button onclick="converter.removeFromHistory(${idx})" style="background: none; border: none; color: #999; cursor: pointer;">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    removeFromHistory(idx) {
+      this.history.splice(idx, 1);
+      this.renderHistory();
+    }
+
+    saveFavorite() {
+      const from = document.getElementById('fromCurrency').value;
+      const to = document.getElementById('toCurrency').value;
+      alert(isEnglish ? `⭐ Pair saved: ${from} ↔ ${to}` : `⭐ Paire sauvegardée : ${from} ↔ ${to}`);
+      // À intégrer avec localStorage
+    }
+  }
+
+  let converter;
+  document.addEventListener('DOMContentLoaded', () => {
+    converter = new CurrencyConverter();
+  });
+</script>
+
+{% endblock %}

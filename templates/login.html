@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card auth-card">
+    <h2>{{ 'Login' if is_en else 'Connexion' }}</h2>
+    <p class="small muted">{{ 'Sign in to access your dashboard.' if is_en else 'Connectez-vous pour accéder à votre tableau de bord.' }}</p>
+    <form method="post" action="/auth/login" data-validate="auth" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="email">Email</label>
+      <input id="email" type="email" name="email" placeholder="{{ 'you@example.com' if is_en else 'vous@exemple.com' }}" required aria-required="true">
+
+      <label for="password">{{ 'Password' if is_en else 'Mot de passe' }}</label>
+      <input id="password" type="password" name="password" placeholder="••••••••" required aria-required="true">
+
+      <div class="auth-actions" style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button type="submit">{{ 'Sign in' if is_en else 'Se connecter' }}</button>
+        <a href="/auth/register" class="kbd">{{ 'Create account' if is_en else 'Créer un compte' }}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}
