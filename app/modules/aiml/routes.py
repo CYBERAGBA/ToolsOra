@@ -97,6 +97,16 @@ def generate_content():
         # Construire le prompt selon le type de contenu
         prompt = _build_prompt(content_type, topic, tone, length, language, context)
         
+        # Fallback si un provider n'est pas disponible
+        if provider == 'huggingface' and not HUGGINGFACE_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'openai' and not OPENAI_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'claude' and not CLAUDE_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'gemini' and not GEMINI_AVAILABLE:
+            provider = 'simple'
+        
         # Appeler le provider approprié
         if provider == 'openai':
             result = _generate_with_openai(prompt)
@@ -159,6 +169,16 @@ def summarize_text():
 Texte à résumer:
 {text}"""
         
+        # Fallback si un provider n'est pas disponible
+        if provider == 'huggingface' and not HUGGINGFACE_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'openai' and not OPENAI_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'claude' and not CLAUDE_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'gemini' and not GEMINI_AVAILABLE:
+            provider = 'simple'
+        
         # Appeler le provider
         if provider == 'openai':
             result = _generate_with_openai(prompt)
@@ -218,6 +238,16 @@ def translate_text():
         
         # Construire le prompt
         prompt = f"Traduis le texte suivant du {source_lang} vers {target_lang}:\n\n{text}"
+        
+        # Fallback si un provider n'est pas disponible
+        if provider == 'huggingface' and not HUGGINGFACE_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'openai' and not OPENAI_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'claude' and not CLAUDE_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'gemini' and not GEMINI_AVAILABLE:
+            provider = 'simple'
         
         # Appeler le provider
         if provider == 'openai':
@@ -289,6 +319,16 @@ def classify_text():
             prompt = f"Identifie l'intention de ce message (question, plainte, feedback, achat, autre):\n\n{text}"
         else:
             prompt = text
+        
+        # Fallback si un provider n'est pas disponible
+        if provider == 'huggingface' and not HUGGINGFACE_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'openai' and not OPENAI_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'claude' and not CLAUDE_AVAILABLE:
+            provider = 'simple'
+        elif provider == 'gemini' and not GEMINI_AVAILABLE:
+            provider = 'simple'
         
         # Appeler le provider
         if provider == 'openai':
