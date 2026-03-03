@@ -157,6 +157,7 @@ config_by_name = {
 
 # Config par défaut
 Config = production_config = config_by_name.get(os.environ.get('FLASK_ENV', 'development'))
-    # Optional: full path to the LibreOffice `soffice` executable.
-    # On Windows this may be: C:\\Program Files\\LibreOffice\\program\\soffice.exe
-    LIBREOFFICE_PATH = os.environ.get('LIBREOFFICE_PATH', r'C:\Program Files\LibreOffice\program\soffice.exe')
+
+# Optional: full path to the LibreOffice `soffice` executable.
+# On Windows this may be: C:\\Program Files\\LibreOffice\\program\\soffice.exe
+LIBREOFFICE_PATH = os.environ.get('LIBREOFFICE_PATH', r'C:\Program Files\LibreOffice\program\soffice.exe')

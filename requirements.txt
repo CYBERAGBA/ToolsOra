@@ -22,7 +22,6 @@ APScheduler==3.10.1           # Planification de tâches serveur
 # ============================================================================
 # Data Processing & Analysis
 # ============================================================================
-pandas==2.1.2                 # Data manipulation
 nltk==3.8.1                   # Natural Language Processing
 requests==2.31.0              # HTTP requests
 
