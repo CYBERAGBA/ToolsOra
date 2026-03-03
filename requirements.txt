@@ -32,15 +32,12 @@ python-docx==0.8.11           # Word documents
 pdfkit==1.0.0                 # PDF generation
 
 # ============================================================================
-# AI/ML (optionnel - peut être désactivé en production)
+# AI/ML (OPTIONNEL en production - À INSTALLER SEPAREMENT si nécessaire)
 # ============================================================================
-transformers==4.35.0          # Hugging Face transformers
-torch>=2.0.0                  # PyTorch
-
-# ============================================================================
-# Payment Integration
-# ============================================================================
-paypalrestsdk==1.14.0         # PayPal SDK
+# ⚠️ Très lourd pour Render / déploiement cloud
+# Pour utiliser: pip install transformers torch
+# transformers==4.35.0
+# torch>=2.0.0
 
 # ============================================================================
 # SMS & Communication
