@@ -2,7 +2,7 @@
 # Flask Core & Web Server
 # ============================================================================
 Flask==2.2.5
-Flask-Login==0.6.2
+Flask-Login==0.6.3            # Updated for Werkzeug 3.0+ compatibility
 Flask-Mail==0.9.1
 Flask-Babel==3.0.1
 gunicorn==21.2.0              # WSGI HTTP Server pour production (Render)
