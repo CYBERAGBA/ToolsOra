@@ -5,14 +5,28 @@
 
 /* Améliorer le contraste sur mobile */
 @media (max-width: 768px) {
-  /* Titres noirs -> rendre visibles SAUF sur fond blanc/clair */
+  /* Titres noirs -> Bleu modern & high-tech */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
+    background: linear-gradient(135deg, #00d4ff 0%, #0fa9ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   
-  /* Appliquer du blanc aux titres sur fond SOMBRE */
+  /* Fallback si gradient ne fonctionne pas: utiliser couleur bleue solide */
+  @supports not (-webkit-background-clip: text) {
+    h1, h2, h3, h4, h5, h6 {
+      color: #00d4ff !important;
+    }
+  }
+  
+  /* Appliquer du bleu aux titres sur fond SOMBRE */
   body h1, body h2, body h3, body h4, body h5, body h6 {
-    color: #fff !important;
+    background: linear-gradient(135deg, #00d4ff 0%, #0fa9ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   
   /* MAIS: Si le titre est dans un conteneur blanc/clair, garder texte foncé */
@@ -28,6 +42,8 @@
   [style*="background: #ffffff"] h1, [style*="background: #ffffff"] h2,
   [style*="background: #ffffff"] h3, [style*="background: #ffffff"] h4 {
     color: #000 !important;
+    background: none !important;
+    -webkit-text-fill-color: unset !important;
   }
   
   /* Texte gris foncé -> rendre visible sur fond sombre */
@@ -127,7 +143,16 @@
 
 /* Fix pour les titres dans les sections */
 section h1, section h2, section h3, section h4 {
-  color: #fff !important;
+  background: linear-gradient(135deg, #00d4ff 0%, #0fa9ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@supports not (-webkit-background-clip: text) {
+  section h1, section h2, section h3, section h4 {
+    color: #00d4ff !important;
+  }
 }
 
 /* Ensure proper contrast for code blocks */
@@ -155,6 +180,21 @@ a:hover {
    Détecte les conteneurs blancs/clairs et applique le texte approprié
    ============================================================================ */
 
+/* Couleur bleue modern & high-tech pour tous les titres */
+h1, h2, h3, h4, h5, h6 {
+  background: linear-gradient(135deg, #00d4ff 0%, #0fa9ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Fallback pour navigateurs qui ne supportent pas le gradient text */
+@supports not (-webkit-background-clip: text) {
+  h1, h2, h3, h4, h5, h6 {
+    color: #00d4ff !important;
+  }
+}
+
 /* For light/white backgrounds, use dark text */
 .lesson-box, .lesson-content, .lesson-detail, .modal-content,
 [class*="light"], [class*="white"], [class*="bright"],
@@ -168,6 +208,8 @@ a:hover {
 .modal-content h1, .modal-content h2, .modal-content h3, .modal-content h4,
 [class*="light"] h1, [class*="light"] h2, [class*="light"] h3, [class*="light"] h4 {
   color: #1a1a1a !important;
+  background: none !important;
+  -webkit-text-fill-color: unset !important;
 }
 
 /* Override the white background rule for modal and light containers */
@@ -180,6 +222,8 @@ a:hover {
 .modal-content h1, .modal-content h2, .modal-content h3, .modal-content h4,
 .lesson-detail h1, .lesson-detail h2, .lesson-detail h3, .lesson-detail h4 {
   color: #1a1a1a !important;
+  background: none !important;
+  -webkit-text-fill-color: unset !important;
 }
 
 .modal p, .modal-content p, .lesson-detail p,
