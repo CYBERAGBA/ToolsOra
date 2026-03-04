@@ -1,13 +1,31 @@
-from flask import render_template, request, redirect, session, url_for, jsonify, abort
+from flask import render_template, request, redirect, session, url_for, jsonify, abort, send_file
 from flask_login import login_required, current_user
 from . import main_bp
 from app.models import User, Subscription, Payment
 from app.security import admin_required
+import os
 
 
 @main_bp.route('/')
 def index():
     return render_template('index.html')
+
+
+@main_bp.route('/<filename>')
+def serve_verification_files(filename):
+    """Serve verification files from static folder."""
+    verification_files = [
+        'google3100977de9b5bc49.html',
+        'robots.txt',
+        'sitemap.xml'
+    ]
+    
+    if filename in verification_files:
+        file_path = os.path.join(os.path.dirname(__file__), '../../static', filename)
+        if os.path.exists(file_path):
+            return send_file(file_path, mimetype='text/html' if filename.endswith('.html') else 'text/plain')
+    
+    abort(404)
 
 
 @main_bp.route('/test-edutools')
