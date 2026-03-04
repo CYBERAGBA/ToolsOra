@@ -120,6 +120,16 @@ def test_button():
     return render_template('test_simple_button.html')
 
 
+@main_bp.route('/content')
+def content():
+    return render_template('content.html')
+
+
+@main_bp.route('/plugins')
+def plugins():
+    return render_template('plugins.html')
+
+
 @main_bp.route('/set-language/<lang>')
 def set_language(lang):
     supported_languages = ['fr', 'en']
