@@ -12,6 +12,21 @@ def index():
     return render_template('index.html')
 
 
+@main_bp.route('/status')
+def status():
+    """Simple status check endpoint."""
+    return jsonify({
+        'status': 'online',
+        'app': 'ToolsOra',
+        'routes': {
+            '/content': 'Content Hub with articles and news',
+            '/plugins': 'Plugins Marketplace',
+            '/dashboard': 'User dashboard',
+            '/admin/dashboard': 'Admin dashboard'
+        }
+    })
+
+
 @main_bp.route('/sitemap.xml')
 def sitemap():
     """Generate dynamic sitemap.xml for SEO."""
