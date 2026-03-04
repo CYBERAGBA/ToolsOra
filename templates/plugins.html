@@ -15,33 +15,117 @@
 
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
     
-    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-      <div style="font-size: 2em; font-weight: bold; color: #00d4ff; margin-bottom: 5px;">OpenAI GPT</div>
-      <div style="font-size: 0.9em; color: #999; margin-bottom: 15px;">AI Models</div>
-      <p>Access to GPT-4, GPT-3.5 and more</p>
-      <button style="background: #00d4ff; color: #000; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Install Plugin</button>
+    <!-- AI Models Category -->
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 3px solid #00d4ff;">
+      <div style="font-size: 2em; font-weight: bold; color: #00d4ff; margin-bottom: 5px;">🤖 OpenAI GPT</div>
+      <div style="font-size: 0.85em; color: #999; margin-bottom: 12px; font-weight: bold;">AI & LLM Models</div>
+      <p style="font-size: 0.95em; color: #666; margin-bottom: 15px;">Access to GPT-4, GPT-3.5-turbo, and embeddings. Perfect for content generation, summarization, and semantic search.</p>
+      <ul style="font-size: 0.9em; color: #666; margin-bottom: 15px; padding-left: 20px;">
+        <li>✓ Text generation & completions</li>
+        <li>✓ Code generation & analysis</li>
+        <li>✓ Semantic embeddings</li>
+      </ul>
+      <button style="background: #00d4ff; color: #000; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">📥 Install</button>
     </div>
 
-    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-      <div style="font-size: 2em; font-weight: bold; color: #00d4ff; margin-bottom: 5px;">Slack</div>
-      <div style="font-size: 0.9em; color: #999; margin-bottom: 15px;">Communication</div>
-      <p>Send notifications and messages to Slack</p>
-      <button style="background: #00d4ff; color: #000; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Install Plugin</button>
+    <!-- Anthropic Claude -->
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 3px solid #00d4ff;">
+      <div style="font-size: 2em; font-weight: bold; color: #00d4ff; margin-bottom: 5px;">🧠 Anthropic Claude</div>
+      <div style="font-size: 0.85em; color: #999; margin-bottom: 12px; font-weight: bold;">AI & LLM Models</div>
+      <p style="font-size: 0.95em; color: #666; margin-bottom: 15px;">Claude 3 models with improved reasoning. Long context window for document analysis and complex tasks.</p>
+      <ul style="font-size: 0.9em; color: #666; margin-bottom: 15px; padding-left: 20px;">
+        <li>✓ 200k context length</li>
+        <li>✓ Constitutional AI</li>
+        <li>✓ Vision capabilities</li>
+      </ul>
+      <button style="background: #00d4ff; color: #000; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">📥 Install</button>
     </div>
 
-    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-      <div style="font-size: 2em; font-weight: bold; color: #00d4ff; margin-bottom: 5px;">Stripe</div>
-      <div style="font-size: 0.9em; color: #999; margin-bottom: 15px;">Payments</div>
-      <p>Process payments and manage subscriptions</p>
-      <button style="background: #00d4ff; color: #000; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Install Plugin</button>
+    <!-- Google Gemini -->
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 3px solid #00d4ff;">
+      <div style="font-size: 2em; font-weight: bold; color: #00d4ff; margin-bottom: 5px;">🔮 Google Gemini</div>
+      <div style="font-size: 0.85em; color: #999; margin-bottom: 12px; font-weight: bold;">AI & LLM Models</div>
+      <p style="font-size: 0.95em; color: #666; margin-bottom: 15px;">Multimodal models that understand text, images, and video. Native integration with Google Cloud services.</p>
+      <ul style="font-size: 0.9em; color: #666; margin-bottom: 15px; padding-left: 20px;">
+        <li>✓ Multimodal processing</li>
+        <li>✓ Vision & document analysis</li>
+        <li>✓ Fast inference</li>
+      </ul>
+      <button style="background: #00d4ff; color: #000; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">📥 Install</button>
+    </div>
+
+    <!-- Slack -->
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 3px solid #667eea;">
+      <div style="font-size: 2em; font-weight: bold; color: #667eea; margin-bottom: 5px;">💬 Slack</div>
+      <div style="font-size: 0.85em; color: #999; margin-bottom: 12px; font-weight: bold;">Communication & Messaging</div>
+      <p style="font-size: 0.95em; color: #666; margin-bottom: 15px;">Send messages, notifications, and alerts directly to Slack channels. Integrate with your entire workflow.</p>
+      <ul style="font-size: 0.9em; color: #666; margin-bottom: 15px; padding-left: 20px;">
+        <li>✓ Message posting</li>
+        <li>✓ Smart notifications</li>
+        <li>✓ Interactive buttons</li>
+      </ul>
+      <button style="background: #667eea; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">📥 Install</button>
+    </div>
+
+    <!-- Twilio -->
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 3px solid #667eea;">
+      <div style="font-size: 2em; font-weight: bold; color: #667eea; margin-bottom: 5px;">📱 Twilio SMS</div>
+      <div style="font-size: 0.85em; color: #999; margin-bottom: 12px; font-weight: bold;">Communication & Messaging</div>
+      <p style="font-size: 0.95em; color: #666; margin-bottom: 15px;">Send SMS and WhatsApp messages to customers worldwide. Build two-way communication channels.</p>
+      <ul style="font-size: 0.9em; color: #666; margin-bottom: 15px; padding-left: 20px;">
+        <li>✓ Global SMS delivery</li>
+        <li>✓ WhatsApp integration</li>
+        <li>✓ Voice calls</li>
+      </ul>
+      <button style="background: #667eea; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">📥 Install</button>
+    </div>
+
+    <!-- Stripe -->
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 3px solid #764ba2;">
+      <div style="font-size: 2em; font-weight: bold; color: #764ba2; margin-bottom: 5px;">💳 Stripe Payments</div>
+      <div style="font-size: 0.85em; color: #999; margin-bottom: 12px; font-weight: bold;">Payments & Subscriptions</div>
+      <p style="font-size: 0.95em; color: #666; margin-bottom: 15px;">Process payments, manage subscriptions, and handle billing with one of the leading payment platforms.</p>
+      <ul style="font-size: 0.9em; color: #666; margin-bottom: 15px; padding-left: 20px;">
+        <li>✓ Payment processing</li>
+        <li>✓ Subscription billing</li>
+        <li>✓ Invoice management</li>
+      </ul>
+      <button style="background: #764ba2; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">📥 Install</button>
     </div>
 
   </div>
 
   <div style="margin-top: 60px; padding: 30px; background: linear-gradient(135deg, rgba(0,212,255,0.1) 0%, rgba(15,169,255,0.1) 100%); border-radius: 10px; text-align: center;">
-    <h2>Ready to Extend? 🚀</h2>
-    <p>Discover 100+ integrations to power your workflow</p>
-    <a href="#" style="display: inline-block; margin-top: 15px; padding: 12px 24px; background: #00d4ff; color: #000; border-radius: 5px;text-decoration: none; font-weight: bold;">Browse All Plugins</a>
+    <h2 style="color: #00d4ff; margin-bottom: 20px;">🔌 More Integrations Available</h2>
+    <p style="color: #666; margin-bottom: 30px;">Explore our complete plugin marketplace with 100+ integrations across AI, messaging, payments, productivity, and more</p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+      <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="font-size: 1.5em; margin-bottom: 8px;">📧</div>
+        <p style="font-weight: bold; color: #1a1a1a;">SendGrid Email</p>
+        <p style="font-size: 0.85em; color: #999;">Marketing automation</p>
+      </div>
+      
+      <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="font-size: 1.5em; margin-bottom: 8px;">📊</div>
+        <p style="font-weight: bold; color: #1a1a1a;">Google Analytics</p>
+        <p style="font-size: 0.85em; color: #999;">Analytics & insights</p>
+      </div>
+      
+      <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="font-size: 1.5em; margin-bottom: 8px;">☁️</div>
+        <p style="font-weight: bold; color: #1a1a1a;">Google Cloud</p>
+        <p style="font-size: 0.85em; color: #999;">Cloud services</p>
+      </div>
+      
+      <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="font-size: 1.5em; margin-bottom: 8px;">💼</div>
+        <p style="font-weight: bold; color: #1a1a1a;">Salesforce CRM</p>
+        <p style="font-size: 0.85em; color: #999;">Customer management</p>
+      </div>
+    </div>
+
+    <a href="#" style="display: inline-block; padding: 12px 30px; background: #00d4ff; color: #000; border-radius: 5px; text-decoration: none; font-weight: bold;">Browse All Plugins →</a>
   </div>
 
 </div>
