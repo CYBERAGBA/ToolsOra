@@ -17,6 +17,11 @@
     <meta name="mobile-alternate" content="{{ request.url_root }}">
     <link rel="canonical" href="{% block canonical_url %}{{ request.base_url }}{% endblock %}">
     
+    <!-- Hreflang Tags for Multilingual SEO -->
+    <link rel="alternate" hreflang="fr" href="{{ request.base_url.rstrip('/') }}?lang=fr">
+    <link rel="alternate" hreflang="en" href="{{ request.base_url.rstrip('/') }}?lang=en">
+    <link rel="alternate" hreflang="x-default" href="{{ request.base_url.rstrip('/') }}">
+    
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="google3100977de9b5bc49">
     
@@ -61,6 +66,25 @@
     <link rel="stylesheet" href="/static/css/edutools-ia.css?v=5">
     <link rel="stylesheet" href="/static/css/mobile.css?v=3">
     <style>
+      /* Image Optimization & Lazy Loading */
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      img[loading="lazy"] {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+      img[loading="lazy"]:loaded {
+        animation: none;
+      }
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      
       /* FORCE: Tous les résultats doivent avoir un texte VISIBLE */
       [id*="Result"] {
         color: #333 !important;
@@ -97,11 +121,17 @@
        alt="Robot IA" 
        id="robot-bg"
        class="robot-decoration"
+       loading="lazy"
+       decoding="async"
   />
     <!-- Logo + Nom -->
     <div class="logo-container">
       <img src="{{ url_for('static', filename='logo1.png') }}"
            alt="ToolsOra Logo"
+           loading="lazy"
+           decoding="async"
+           width="48"
+           height="48"
       >
       <span class="logo-text">
         Tools <span class="text-orange">Ora</span>
@@ -140,7 +170,7 @@
       <div class="container">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
           <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="{{ url_for('static', filename='logo1.png') }}" alt="ToolsOra Logo" style="height: 40px; width: auto;">
+            <img src="{{ url_for('static', filename='logo1.png') }}" alt="ToolsOra Logo" style="height: 40px; width: auto;" loading="lazy" decoding="async" width="40" height="40">
             <div>
               <strong style="font-size: 1.1em;">ToolsOra</strong>
               <p style="margin: 0; opacity: 0.8; font-size: 0.9em;">Suite IA pour Professionnels</p>
@@ -174,6 +204,45 @@
     
     <script src="/static/js/app.js?v=4" defer></script>
     <script src="/static/js/edutools-ia.js?v=4" defer></script>
+    
+    <!-- Image Optimization Script -->
+    <script>
+      // Enable native lazy loading support detection and optimize images
+      (function() {
+        // Check if IntersectionObserver is available for better lazy loading
+        if ('IntersectionObserver' in window) {
+          const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const img = entry.target;
+                // Remove placeholder animation once image loads
+                img.addEventListener('load', () => {
+                  img.style.animation = 'none';
+                }, { once: true });
+                observer.unobserve(img);
+              }
+            });
+          });
+          
+          document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+            imageObserver.observe(img);
+          });
+        }
+        
+        // WebP support detection
+        const webpSupport = () => {
+          const canvas = document.createElement('canvas');
+          if (canvas.getContext && canvas.getContext('2d')) {
+            return canvas.toDataURL('image/webp').indexOf('image/webp') === 5;
+          }
+          return false;
+        };
+        
+        if (webpSupport()) {
+          document.documentElement.classList.add('webp-support');
+        }
+      })();
+    </script>
     
     <!-- Structured Data (JSON-LD) for Google -->
     <script type="application/ld+json">
