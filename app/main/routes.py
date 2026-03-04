@@ -1,9 +1,10 @@
-from flask import render_template, request, redirect, session, url_for, jsonify, abort, send_file
+from flask import render_template, request, redirect, session, url_for, jsonify, abort, send_file, Response
 from flask_login import login_required, current_user
 from . import main_bp
 from app.models import User, Subscription, Payment
 from app.security import admin_required
 import os
+from datetime import datetime
 
 
 @main_bp.route('/')
@@ -11,19 +12,100 @@ def index():
     return render_template('index.html')
 
 
+@main_bp.route('/sitemap.xml')
+def sitemap():
+    """Generate dynamic sitemap.xml for SEO."""
+    base_url = request.url_root.rstrip('/')
+    
+    # Core pages
+    urls = [
+        ('/', 'weekly', 1.0),
+        ('/dashboard', 'weekly', 0.8),
+    ]
+    
+    # Module pages
+    modules = [
+        ('aiml', 'AI/ML Content Generation'),
+        ('automation', 'Business Process Automation'),
+        ('content', 'Content Management'),
+        ('education', 'Educational Tools'),
+        ('export', 'Data Export'),
+        ('notifications', 'Notifications'),
+        ('plugins', 'Plugins & Extensions'),
+        ('rewards', 'Rewards & Gamification'),
+        ('saas', 'SaaS Management'),
+        ('scheduling', 'Schedule Management'),
+        ('sms', 'SMS & Communications'),
+    ]
+    
+    for module_name, _ in modules:
+        urls.append((f'/{module_name}', 'weekly', 0.7))
+    
+    # Generate XML
+    xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    for path, changefreq, priority in urls:
+        xml_content += f'''  <url>
+    <loc>{base_url}{path}</loc>
+    <lastmod>{datetime.utcnow().strftime('%Y-%m-%d')}</lastmod>
+    <changefreq>{changefreq}</changefreq>
+    <priority>{priority}</priority>
+  </url>
+'''
+    
+    xml_content += '</urlset>'
+    
+    return Response(xml_content, mimetype='application/xml')
+
+
+@main_bp.route('/robots.txt')
+def robots():
+    """Generate robots.txt for search engine crawling."""
+    robots_content = '''User-agent: *
+Allow: /
+Allow: /static/
+Allow: /dashboard
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /private/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: ''' + request.url_root.rstrip('/') + '''/sitemap.xml
+
+# Google Search Console
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.1
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+'''
+    return Response(robots_content, mimetype='text/plain')
+
+
 @main_bp.route('/<filename>')
 def serve_verification_files(filename):
     """Serve verification files from static folder."""
     verification_files = [
         'google3100977de9b5bc49.html',
-        'robots.txt',
-        'sitemap.xml'
     ]
     
     if filename in verification_files:
         file_path = os.path.join(os.path.dirname(__file__), '../../static', filename)
         if os.path.exists(file_path):
-            return send_file(file_path, mimetype='text/html' if filename.endswith('.html') else 'text/plain')
+            return send_file(file_path, mimetype='text/html')
     
     abort(404)
 

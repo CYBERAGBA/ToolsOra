@@ -1,6 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %}{{ 'Automation - OraHub' if is_en else 'Automatisation - OraHub' }}{% endblock %}
+{% block page_title %}Automation & Workflow - ToolsOra{% endblock %}
+{% block meta_description %}Automatisez vos processus métier avec ToolsOra. Workflows, tâches, rapports et intégration SMS - tout en un.{% endblock %}
+{% block meta_keywords %}Automation, Workflows, RPA, Task Management, Business Process, Integration{% endblock %}
+
+{% block og_title %}ToolsOra Business Automation - Automatisez vos Processus{% endblock %}
+{% block og_description %}Plateforme d'automation complète pour vos workflows métier. Gérez tasks, rapports et SMS facilement.{% endblock %}
+{% block og_url %}{{ request.base_url.rstrip('/') }}{% endblock %}
+
+{% block breadcrumb_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.url_root.rstrip('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Automation & Workflows",
+      "item": "{{ request.base_url.rstrip('/') }}"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ToolsOra Business Automation",
+  "description": "Plateforme d'automation pour workflows métier, tasks et intégrations",
+  "applicationCategory": "BusinessApplication",
+  "url": "{{ request.base_url.rstrip('/') }}"
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <main style="max-width:1400px; margin:40px auto; padding:0 20px">

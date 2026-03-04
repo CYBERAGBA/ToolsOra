@@ -1,3 +1,4 @@
+{% import 'macros.html' as m %}
 <!doctype html>
 <html lang="{{ current_lang }}">
   <head>
@@ -20,19 +21,25 @@
     <meta name="google-site-verification" content="google3100977de9b5bc49">
     
     <!-- OpenGraph (Facebook, LinkedIn, etc.) -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="{% block og_title %}ToolsOra - Outils IA et Automation{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Suite complète d'outils IA pour professionnels et entrepreneurs{% endblock %}">
-    <meta property="og:url" content="{% block og_url %}{{ request.base_url }}{% endblock %}">
-    <meta property="og:image" content="{{ request.url_root }}static/logo1.png">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}ToolsOra - Suite d'Outils IA et Automation{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Suite complète d'outils IA, automation, content creation et SaaS pour optimiser votre productivité professionnelle.{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.base_url.rstrip('/') }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.url_root.rstrip('/') }}/static/logo1.png{% endblock %}">
+    <meta property="og:image:width" content="200">
+    <meta property="og:image:height" content="200">
     <meta property="og:site_name" content="ToolsOra">
-    <meta property="og:locale" content="{{ current_lang }}_{{ current_lang.upper() }}">
+    <meta property="og:locale" content="{% block og_locale %}{{ current_lang }}_{{ current_lang.upper() }}{% endblock %}">
+    <meta property="og:locale:alternate" content="fr_FR">
+    <meta property="og:locale:alternate" content="en_US">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}ToolsOra - Outils IA{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Découvrez nos outils IA puissants{% endblock %}">
-    <meta name="twitter:image" content="{{ request.url_root }}static/logo1.png">
+    <meta name="twitter:site" content="@ToolsOra">
+    <meta name="twitter:creator" content="@ToolsOra">
+    <meta name="twitter:title" content="{% block twitter_title %}ToolsOra - Outils IA Professionnels{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Découvrez nos outils IA puissants pour l'automation, content creation et bien plus.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.url_root.rstrip('/') }}/static/logo1.png{% endblock %}">
     
     <!-- Additional SEO -->
     <meta name="revisit-after" content="7 days">
@@ -77,6 +84,10 @@
         color: #333 !important;
       }
     </style>
+    
+    <!-- Breadcrumb Schema (can be overridden in child templates) -->
+    {% block breadcrumb_schema %}{% endblock %}
+    
   </head>
  <body class="body-styled">
     <header class="header-styled">

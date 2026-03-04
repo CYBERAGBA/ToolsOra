@@ -1,0 +1,78 @@
+{% macro breadcrumb(items) %}
+  <!-- Breadcrumb HTML + Schema JSON-LD -->
+  <div class="breadcrumb" style="margin: 20px 0; font-size: 0.95em; color: #666;">
+    {% for item in items %}
+      {% if not loop.last %}
+        <a href="{{ item.url }}" style="color: #007bff; text-decoration: none;">{{ item.label }}</a>
+        <span> / </span>
+      {% else %}
+        <span style="color: #333; font-weight: 500;">{{ item.label }}</span>
+      {% endif %}
+    {% endfor %}
+  </div>
+  
+  <!-- Breadcrumb Schema JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {% for item in items %}
+      {
+        "@type": "ListItem",
+        "position": {{ loop.index }},
+        "name": "{{ item.label }}",
+        "item": "{{ request.url_root.rstrip('/') }}{{ item.url }}"
+      }{{ "," if not loop.last else "" }}
+      {% endfor %}
+    ]
+  }
+  </script>
+{% endmacro %}
+
+{% macro og_meta(title, description, image=None, type='website', url=None) %}
+  <!-- OpenGraph Meta Tags -->
+  <meta property="og:type" content="{{ type }}">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  {% if url %}
+    <meta property="og:url" content="{{ url }}">
+  {% endif %}
+  {% if image %}
+    <meta property="og:image" content="{{ image }}">
+  {% else %}
+    <meta property="og:image" content="{{ request.url_root.rstrip('/') }}/static/logo1.png">
+  {% endif %}
+{% endmacro %}
+
+{% macro twitter_meta(title, description, image=None) %}
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ title }}">
+  <meta name="twitter:description" content="{{ description }}">
+  {% if image %}
+    <meta name="twitter:image" content="{{ image }}">
+  {% else %}
+    <meta name="twitter:image" content="{{ request.url_root.rstrip('/') }}/static/logo1.png">
+  {% endif %}
+{% endmacro %}
+
+{% macro module_schema(module_name, module_title, module_description) %}
+  <!-- Software Application Schema for Modules -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "{{ module_title }}",
+    "description": "{{ module_description }}",
+    "applicationCategory": "BusinessApplication",
+    "url": "{{ request.url_root.rstrip('/') }}/{{ module_name }}",
+    "operatingSystem": "Web/Cloud",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+{% endmacro %}

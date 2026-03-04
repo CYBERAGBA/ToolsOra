@@ -1,4 +1,45 @@
 {% extends 'base.html' %}
+
+{% block page_title %}SaaS Management - ToolsOra Subscription Platform{% endblock %}
+{% block meta_description %}Gérez vos abonnements SaaS facilement avec ToolsOra. Dashboard, facturation, suivi clients - tout intégré.{% endblock %}
+{% block meta_keywords %}SaaS, Subscription Management, Billing, Dashboard, Business Management{% endblock %}
+
+{% block og_title %}ToolsOra SaaS Management - Gérez vos Abonnements{% endblock %}
+{% block og_description %}Plateforme complète pour gérer vos abonnements SaaS. Facturation, clients et analytics en un seul endroit.{% endblock %}
+
+{% block breadcrumb_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.url_root.rstrip('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "SaaS Management",
+      "item": "{{ request.base_url.rstrip('/') }}"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ToolsOra SaaS Management",
+  "description": "Plateforme de gestion d'abonnements SaaS avec facturation et analytics",
+  "applicationCategory": "BusinessApplication",
+  "url": "{{ request.base_url.rstrip('/') }}"
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <style>
 /* Hero */

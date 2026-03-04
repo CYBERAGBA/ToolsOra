@@ -1,6 +1,34 @@
 {% extends "base.html" %}
 
-{% block title %}Data Export & Sync{% endblock %}
+{% block page_title %}Data Export - ToolsOra Data Management{% endblock %}
+{% block meta_description %}Exportez vos données facilement avec ToolsOra. Format CSV, JSON, Excel - tout ce qu'il vous faut pour l'analyse de données.{% endblock %}
+{% block meta_keywords %}Data Export, CSV, JSON, Excel, Data Management, Analytics{% endblock %}
+
+{% block og_title %}ToolsOra Data Export - Exportez vos Données{% endblock %}
+{% block og_description %}Outils d'export de données avancés en CSV, JSON, Excel et plus.{% endblock %}
+
+{% block breadcrumb_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.url_root.rstrip('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Data Export",
+      "item": "{{ request.base_url.rstrip('/') }}"
+    }
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <main style="max-width:1200px; margin:40px auto; padding:0 20px">

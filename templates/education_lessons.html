@@ -1,5 +1,44 @@
 {% extends 'base.html' %}
-{% block title %}{{ 'All Lessons — Education' if is_en else 'Toutes les Leçons — Éducation' }} | OraHub{% endblock %}
+
+{% block page_title %}Leçons Éducatives - ToolsOra Education Platform{% endblock %}
+{% block meta_description %}Découvrez nos leçons éducatives sur l'IA, l'automation, et le digital marketing. Apprendre à votre rythme avec ToolsOra.{% endblock %}
+{% block meta_keywords %}Education, Leçons, IA, Digital Marketing, Automation, Formation en ligne{% endblock %}
+
+{% block og_title %}ToolsOra - Plateforme d'Éducation IA et Automation{% endblock %}
+{% block og_description %}Accédez à des leçons professionnelles sur l'IA, l'automation business et le digital marketing.{% endblock %}
+{% block og_url %}{{ request.base_url.rstrip('/') }}{% endblock %}
+
+{% block breadcrumb_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.url_root.rstrip('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Éducation",
+      "item": "{{ request.base_url.rstrip('/') }}"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationEvent",
+  "name": "ToolsOra Online Education Platform",
+  "description": "Plateforme de formation en ligne sur IA, automation et digital marketing",
+  "url": "{{ request.base_url.rstrip('/') }}"
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <style>

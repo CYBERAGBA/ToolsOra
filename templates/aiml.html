@@ -1,6 +1,50 @@
 {% extends "base.html" %}
 
-{% block title %}AI/ML - Content Generation{% endblock %}
+{% block page_title %}AI/ML Content Generation - ToolsOra{% endblock %}
+{% block meta_description %}Générez du contenu IA avec ChatGPT, Claude et Gemini. Résumés, traductions, classification de texte avec ToolsOra.{% endblock %}
+{% block meta_keywords %}AI Content, ChatGPT, Claude, Gemini, Content Generation, Text Summary, Translation, IA{% endblock %}
+
+{% block og_title %}ToolsOra AI/ML - Génération de Contenu IA{% endblock %}
+{% block og_description %}Générateur de contenu IA puissant avec ChatGPT, Claude et Gemini. Traductions, résumés et classifications instantanées.{% endblock %}
+{% block og_url %}{{ request.base_url.rstrip('/') }}{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block twitter_title %}Générateur de Contenu IA - ToolsOra{% endblock %}
+{% block twitter_description %}Créez du contenu amazing avec nos outils IA professionnels{% endblock %}
+
+{% block breadcrumb_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.url_root.rstrip('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "AI/ML Content Generation",
+      "item": "{{ request.base_url.rstrip('/') }}"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ToolsOra AI/ML Content Generation",
+  "description": "Générateur de contenu IA avec ChatGPT, Claude et Gemini",
+  "applicationCategory": "BusinessApplication",
+  "url": "{{ request.base_url.rstrip('/') }}",
+  "operatingSystem": "Web/Cloud"
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <main style="max-width:1200px; margin:40px auto; padding:0 20px">

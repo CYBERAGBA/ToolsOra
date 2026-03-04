@@ -1,5 +1,35 @@
 {% extends "base.html" %}
 
+{% block page_title %}SMS & Messaging - ToolsOra Communication Platform{% endblock %}
+{% block meta_description %}Envoyez des SMS en masse avec ToolsOra. Campagnes marketing, notifications, et gestion de conversations SMS.{% endblock %}
+{% block meta_keywords %}SMS Marketing, Bulk SMS, Text Messages, Communication, SMS Campaigns{% endblock %}
+
+{% block og_title %}ToolsOra SMS - Envoyez des SMS en Masse{% endblock %}
+{% block og_description %}Plateforme SMS complète pour campagnes marketing, notifications et communications.{% endblock %}
+
+{% block breadcrumb_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.url_root.rstrip('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "SMS & Messaging",
+      "item": "{{ request.base_url.rstrip('/') }}"
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block title %}SMS & WhatsApp Broadcast{% endblock %}
 
 {% block content %}

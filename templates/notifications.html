@@ -1,5 +1,35 @@
 {% extends "base.html" %}
 
+{% block page_title %}Notifications & Alerts - ToolsOra Communication Hub{% endblock %}
+{% block meta_description %}Gérez vos notifications et alertes avec ToolsOra. Communication centralisée pour votre équipe.{% endblock %}
+{% block meta_keywords %}Notifications, Alerts, Communication, Team Messaging, Real-time Updates{% endblock %}
+
+{% block og_title %}ToolsOra Notifications - Communication Centralisée{% endblock %}
+{% block og_description %}Hub de communication avec notifications en temps réel et alertes intelligentes.{% endblock %}
+
+{% block breadcrumb_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.url_root.rstrip('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Notifications",
+      "item": "{{ request.base_url.rstrip('/') }}"
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block title %}Notifications Push{% endblock %}
 
 {% block content %}

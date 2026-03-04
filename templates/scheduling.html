@@ -1,5 +1,35 @@
 {% extends "base.html" %}
 
+{% block page_title %}Scheduling & Calendar - ToolsOra Schedule Manager{% endblock %}
+{% block meta_description %}Gérez vos calendriers et planifications avec ToolsOra. Synchronisation, rappels et organisation faciles.{% endblock %}
+{% block meta_keywords %}Scheduling, Calendar, Time Management, Planning, Calendar Integration{% endblock %}
+
+{% block og_title %}ToolsOra Scheduling - Planifiez Facilement{% endblock %}
+{% block og_description %}Outil de planification et calendrier pour gérer vos rendez-vous et tâches.{% endblock %}
+
+{% block breadcrumb_schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.url_root.rstrip('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Scheduling",
+      "item": "{{ request.base_url.rstrip('/') }}"
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block title %}Smart Scheduling{% endblock %}
 
 {% block content %}
