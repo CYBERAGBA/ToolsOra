@@ -1,5 +1,5 @@
 from . import content_bp
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app, render_template
 import random
 
 
@@ -9,6 +9,12 @@ def _simple_template_article(topic):
              "Conclusion et pistes pour aller plus loin."]
     random.shuffle(lines)
     return '\n\n'.join(lines)
+
+
+@content_bp.route('/', methods=['GET'])
+def content_page():
+    """Content module home page"""
+    return render_template('content.html')
 
 
 @content_bp.route('/generate_article', methods=['POST'])

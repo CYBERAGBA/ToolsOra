@@ -1,6 +1,12 @@
 from . import plugins_bp
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from ...models import Plugin
+
+
+@plugins_bp.route('/', methods=['GET'])
+def plugins_page():
+    """Plugins module home page"""
+    return render_template('plugins.html')
 
 
 @plugins_bp.route('/publish', methods=['POST'])
