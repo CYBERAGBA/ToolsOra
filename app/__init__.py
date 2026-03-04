@@ -76,8 +76,6 @@ def create_app(config_class=Config):
     from .modules.education import education_bp
     from .modules.saas import saas_bp
     from .modules.automation import automation_bp
-    from .modules.content import content_bp
-    from .modules.plugins import plugins_bp
     from .modules.aiml import aiml_bp
     from .modules.sms import sms_bp
     from .modules.export import export_bp
@@ -98,8 +96,6 @@ def create_app(config_class=Config):
     app.register_blueprint(education_bp, url_prefix='/modules/education')
     app.register_blueprint(saas_bp, url_prefix='/modules/saas')
     app.register_blueprint(automation_bp, url_prefix='/modules/automation')
-    app.register_blueprint(content_bp, url_prefix='/modules/content')
-    app.register_blueprint(plugins_bp, url_prefix='/modules/plugins')
     app.register_blueprint(technologie_bp, url_prefix='/modules/technologie')
     app.register_blueprint(business_bp, url_prefix='/modules/business')
     app.register_blueprint(creativity_bp, url_prefix='/modules/creativity')
