@@ -6,7 +6,42 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>ToolsOra</title>
+    <title>{% block page_title %}ToolsOra - Outils IA et Automation pour Professionnels{% endblock %}</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block meta_description %}ToolsOra: Suite complète d'outils IA, automation, content creation, éducation et SaaS pour optimiser votre productivité. Découvrez la puissance de l'intelligence artificielle.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}IA, automation, content creation, éducation, SaaS, tools, intelligence artificielle, productivité, business, technologie{% endblock %}">
+    <meta name="author" content="ToolsOra Team">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="mobile-alternate" content="{{ request.url_root }}">
+    <link rel="canonical" href="{% block canonical_url %}{{ request.base_url }}{% endblock %}">
+    
+    <!-- OpenGraph (Facebook, LinkedIn, etc.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}ToolsOra - Outils IA et Automation{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Suite complète d'outils IA pour professionnels et entrepreneurs{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.base_url }}{% endblock %}">
+    <meta property="og:image" content="{{ request.url_root }}static/logo1.png">
+    <meta property="og:site_name" content="ToolsOra">
+    <meta property="og:locale" content="{{ current_lang }}_{{ current_lang.upper() }}">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}ToolsOra - Outils IA{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Découvrez nos outils IA puissants{% endblock %}">
+    <meta name="twitter:image" content="{{ request.url_root }}static/logo1.png">
+    
+    <!-- Additional SEO -->
+    <meta name="revisit-after" content="7 days">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="general">
+    <meta name="copyright" content="© 2024 ToolsOra. All rights reserved.">
+    <meta name="language" content="{{ current_lang }}">
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <link rel="stylesheet" href="/static/css/styles.css?v=5">
     <link rel="stylesheet" href="/static/css/edutools-ia.css?v=5">
     <link rel="stylesheet" href="/static/css/mobile.css?v=3">
@@ -106,6 +141,50 @@
     
     <script src="/static/js/app.js?v=4" defer></script>
     <script src="/static/js/edutools-ia.js?v=4" defer></script>
+    
+    <!-- Structured Data (JSON-LD) for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "ToolsOra",
+      "url": "{{ request.url_root }}",
+      "logo": "{{ request.url_root }}static/logo1.png",
+      "description": "Suite complète d'outils IA, automation et SaaS pour professionnels",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Support",
+        "availableLanguage": ["en", "fr"]
+      },
+      "sameAs": [
+        "https://github.com/CYBERAGBA/ToolsOra"
+      ],
+      "foundingDate": "2024"
+    }
+    </script>
+    
+    <!-- Website Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "ToolsOra",
+      "url": "{{ request.url_root }}",
+      "description": "Outils d'intelligence artificielle et automation pour optimiser la productivité",
+      "inLanguage": ["en", "fr"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "{{ request.url_root }}search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <!-- Page-specific Schema Block (use in child templates) -->
+    {% block extra_schema %}{% endblock %}
 
     <!-- JS Parallax pour robot -->
 <script>
