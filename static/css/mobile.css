@@ -1,0 +1,122 @@
+/* ============================================================================
+   MOBILE RESPONSIVE & ACCESSIBILITY IMPROVEMENTS
+   Améliore la visibilité sur mobile sans casser le design existant
+   ============================================================================ */
+
+/* Améliorer le contraste sur mobile */
+@media (max-width: 768px) {
+  /* Titres noirs -> rendre visibles */
+  h1, h2, h3, h4, h5, h6 {
+    color: #fff !important;
+    font-weight: 600;
+  }
+  
+  /* Texte gris foncé -> rendre visible */
+  body, p, span, div, li, td {
+    color: #e6eef6;
+  }
+  
+  /* Cards: améliorer le contraste */
+  .card {
+    background: linear-gradient(180deg, rgba(13, 26, 42, 0.8), rgba(7, 20, 38, 0.8)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  
+  /* Augmenter légèrement la luminosité du fond sur mobile */
+  body {
+    background: linear-gradient(180deg, #0d1a2a 0%, #0d1f2d 100%) !important;
+  }
+  
+  /* Boutons -> meilleur contraste */
+  button, a.btn, .btn {
+    background-color: #17a2ff !important;
+    color: #fff !important;
+  }
+  
+  /* Inputs */
+  input, textarea, select {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #e6eef6 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  }
+  
+  input::placeholder, textarea::placeholder {
+    color: #9aa6b2 !important;
+  }
+  
+  /* Tables */
+  table, tr, td, th {
+    color: #e6eef6 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+  
+  /* Navigation */
+  .nav-link {
+    color: #fff !important;
+  }
+  
+  /* Force tous les textes problématiques à être lisibles */
+  [style*="color: black"], 
+  [style*="color:black"],
+  [style*="color: #000"],
+  [style*="color:#000"] {
+    color: #fff !important;
+  }
+}
+
+/* Ultra-petit écrans (< 480px) */
+@media (max-width: 480px) {
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 0.95em;
+    margin-top: 0.5em;
+    margin-bottom: 0.3em;
+  }
+  
+  .container {
+    padding: 0 12px;
+  }
+  
+  .card {
+    padding: 12px !important;
+    margin: 8px 0 !important;
+  }
+}
+
+/* Améliore la lisibilité des résultats et outputs */
+.result, [class*="result"], [id*="Result"], .output {
+  background-color: rgba(13, 26, 42, 0.9) !important;
+  color: #e6eef6 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.result h2, .result h3, .result h4, [class*="result"] h2, [class*="result"] h3, [class*="result"] h4 {
+  color: #17a2ff !important;
+}
+
+/* Fix pour les titres dans les sections */
+section h1, section h2, section h3, section h4 {
+  color: #fff !important;
+}
+
+/* Ensure proper contrast for code blocks */
+code, pre {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  color: #ffd56f !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Links visibility */
+a {
+  color: #17a2ff !important;
+}
+
+a:visited {
+  color: #0f88d9 !important;
+}
+
+a:hover {
+  color: #5ec7ff !important;
+}
