@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">🧩 Plugins</h1>
+            
+            <div class="alert alert-info">
+                <h5>Bienvenue dans le module Plugins</h5>
+                <p>Étendez les capacités de la plateforme avec des plugins personnalisés.</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🔌 Mes Plugins</h5>
+                            <p class="card-text">Consultez et gérez les plugins que vous avez installés.</p>
+                            <button class="btn btn-primary" data-action="list-plugins" disabled>
+                                Disponible bientôt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🎯 Installer un Plugin</h5>
+                            <p class="card-text">Découvrez et installez des plugins de notre marketplace.</p>
+                            <button class="btn btn-success" data-action="install-plugin" disabled>
+                                Disponible bientôt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Plugins supplémentaires</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">
+                                Plus de plugins et de paramètres de configuration seront disponibles très bientôt.
+                                Nous travaillons à développer un écosystème complet de plugins pour enrichir votre expérience.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Fonctionnalités à venir</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">🌐 Marketplace de plugins</li>
+                                <li class="list-group-item">⚙️ Configuration avancée des plugins</li>
+                                <li class="list-group-item">🔐 Gestion des permissions</li>
+                                <li class="list-group-item">📦 Import/Export de configurations</li>
+                                <li class="list-group-item">🚀 Mise à jour automatique</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}
