@@ -45,6 +45,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo1.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo1.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo1.png') }}">
+    
     <link rel="stylesheet" href="/static/css/styles.css?v=5">
     <link rel="stylesheet" href="/static/css/edutools-ia.css?v=5">
     <link rel="stylesheet" href="/static/css/mobile.css?v=3">
@@ -121,7 +126,21 @@
       {% block content %}{% endblock %}
     </main>
     <footer class="site-footer">
-      <div class="container">© ToolsOra</div>
+      <div class="container">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="{{ url_for('static', filename='logo1.png') }}" alt="ToolsOra Logo" style="height: 40px; width: auto;">
+            <div>
+              <strong style="font-size: 1.1em;">ToolsOra</strong>
+              <p style="margin: 0; opacity: 0.8; font-size: 0.9em;">Suite IA pour Professionnels</p>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0; opacity: 0.8;">© 2024 ToolsOra - Tous droits réservés</p>
+            <p style="margin: 5px 0 0 0; opacity: 0.6; font-size: 0.85em;">Powered by AI & Automation</p>
+          </div>
+        </div>
+      </div>
     </footer>
     <div id="toasts" aria-live="polite" aria-atomic="true"></div>
     
