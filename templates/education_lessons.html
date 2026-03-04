@@ -800,7 +800,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </p>
     
     <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-      <a href="/education/program" data-module="education" data-lesson="program-intro" class="btn" style="
+      <a href="#lessons-list" data-module="education" data-lesson="lessons-access" class="btn" style="
         background: linear-gradient(135deg, #00d4ff 0%, #0fa9ff 100%);
         color: #000;
         padding: 12px 28px;
@@ -814,7 +814,7 @@ document.addEventListener('DOMContentLoaded', function() {
         box-shadow: 0 0 20px rgba(0,212,255,0.4);
       " onmouseover="this.style.boxShadow='0 0 30px rgba(0,212,255,0.8), 0 0 60px rgba(0,212,255,0.3)'; this.style.transform='translateY(-2px)';" 
         onmouseout="this.style.boxShadow='0 0 20px rgba(0,212,255,0.4)'; this.style.transform='translateY(0)';">
-        <i class="fas fa-rocket me-2"></i>{{ 'Start Learning' if is_en else 'Commencer' }}
+        <i class="fas fa-rocket me-2"></i>{{ 'Start Learning Now' if is_en else 'Commencer les Leçons' }}
       </a>
       <a href="/" data-module="navigation" class="btn" style="
         background: rgba(0,212,255,0.1);
