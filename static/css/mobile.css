@@ -5,26 +5,63 @@
 
 /* Améliorer le contraste sur mobile */
 @media (max-width: 768px) {
-  /* Titres noirs -> rendre visibles */
+  /* Titres noirs -> rendre visibles SAUF sur fond blanc/clair */
   h1, h2, h3, h4, h5, h6 {
-    color: #fff !important;
     font-weight: 600;
   }
   
-  /* Texte gris foncé -> rendre visible */
+  /* Appliquer du blanc aux titres sur fond SOMBRE */
+  body h1, body h2, body h3, body h4, body h5, body h6 {
+    color: #fff !important;
+  }
+  
+  /* MAIS: Si le titre est dans un conteneur blanc/clair, garder texte foncé */
+  .white-bg h1, .white-bg h2, .white-bg h3, .white-bg h4, .white-bg h5, .white-bg h6,
+  [style*="background-color: white"] h1, [style*="background-color: white"] h2,
+  [style*="background-color: white"] h3, [style*="background-color: white"] h4,
+  [style*="background-color: #fff"] h1, [style*="background-color: #fff"] h2,
+  [style*="background-color: #fff"] h3, [style*="background-color: #fff"] h4,
+  [style*="background: white"] h1, [style*="background: white"] h2,
+  [style*="background: white"] h3, [style*="background: white"] h4,
+  [style*="background: #fff"] h1, [style*="background: #fff"] h2,
+  [style*="background: #fff"] h3, [style*="background: #fff"] h4,
+  [style*="background: #ffffff"] h1, [style*="background: #ffffff"] h2,
+  [style*="background: #ffffff"] h3, [style*="background: #ffffff"] h4 {
+    color: #000 !important;
+  }
+  
+  /* Texte gris foncé -> rendre visible sur fond sombre */
   body, p, span, div, li, td {
     color: #e6eef6;
+  }
+  
+  /* MAIS: Texte sur fond blanc doit rester sombre */
+  .white-bg, .light-bg, [style*="background-color: white"], 
+  [style*="background-color: #fff"], [style*="background: white"],
+  [style*="background: #fff"], [style*="background: #ffffff"] {
+    color: #333 !important;
+  }
+  
+  .white-bg p, .white-bg span, .white-bg div, .white-bg li,
+  [style*="background-color: white"] p, [style*="background-color: white"] span,
+  [style*="background-color: #fff"] p, [style*="background-color: #fff"] span,
+  [style*="background: white"] p, [style*="background: white"] span,
+  [style*="background: #fff"] p, [style*="background: #fff"] span,
+  [style*="background: #ffffff"] p, [style*="background: #ffffff"] span {
+    color: #333 !important;
   }
   
   /* Cards: améliorer le contraste */
   .card {
     background: linear-gradient(180deg, rgba(13, 26, 42, 0.8), rgba(7, 20, 38, 0.8)) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #e6eef6 !important;
   }
   
   /* Augmenter légèrement la luminosité du fond sur mobile */
   body {
     background: linear-gradient(180deg, #0d1a2a 0%, #0d1f2d 100%) !important;
+    color: #e6eef6;
   }
   
   /* Boutons -> meilleur contraste */
@@ -52,14 +89,6 @@
   
   /* Navigation */
   .nav-link {
-    color: #fff !important;
-  }
-  
-  /* Force tous les textes problématiques à être lisibles */
-  [style*="color: black"], 
-  [style*="color:black"],
-  [style*="color: #000"],
-  [style*="color:#000"] {
     color: #fff !important;
   }
 }
@@ -120,3 +149,42 @@ a:visited {
 a:hover {
   color: #5ec7ff !important;
 }
+
+/* ============================================================================
+   INTELLIGENT COLOR DETECTION & CONTRAST FIX
+   Détecte les conteneurs blancs/clairs et applique le texte approprié
+   ============================================================================ */
+
+/* For light/white backgrounds, use dark text */
+.lesson-box, .lesson-content, .lesson-detail, .modal-content,
+[class*="light"], [class*="white"], [class*="bright"],
+[style*="background: rgb(255"], [style*="background: rgb(254"],
+[style*="background: rgb(253"] {
+  color: #333 !important;
+}
+
+.lesson-box h1, .lesson-box h2, .lesson-box h3, .lesson-box h4,
+.lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content h4,
+.modal-content h1, .modal-content h2, .modal-content h3, .modal-content h4,
+[class*="light"] h1, [class*="light"] h2, [class*="light"] h3, [class*="light"] h4 {
+  color: #1a1a1a !important;
+}
+
+/* Override the white background rule for modal and light containers */
+.modal, .modal-content, .alert-light, .lesson-detail {
+  background-color: white !important;
+  color: #333 !important;
+}
+
+.modal h1, .modal h2, .modal h3, .modal h4,
+.modal-content h1, .modal-content h2, .modal-content h3, .modal-content h4,
+.lesson-detail h1, .lesson-detail h2, .lesson-detail h3, .lesson-detail h4 {
+  color: #1a1a1a !important;
+}
+
+.modal p, .modal-content p, .lesson-detail p,
+.modal span, .modal-content span, .lesson-detail span,
+.modal div, .modal-content div, .lesson-detail div {
+  color: #333 !important;
+}
+
