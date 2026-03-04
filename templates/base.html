@@ -297,7 +297,47 @@
       robot.style.transform = `translateY(calc(-50% + ${offset}px))`;
     }
   });
+  
+  // Analytics Event Tracking
+  window.trackEvent = function(eventName, eventData = {}) {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', eventName, eventData);
+    }
+    console.log('Event tracked:', eventName, eventData);
+  };
+  
+  // Track module clicks
+  document.querySelectorAll('[data-module]').forEach(element => {
+    element.addEventListener('click', function() {
+      trackEvent('module_click', {
+        'module': this.dataset.module,
+        'module_name': this.textContent
+      });
+    });
+  });
+  
+  // Track lesson/content access
+  document.querySelectorAll('[data-lesson]').forEach(element => {
+    element.addEventListener('click', function() {
+      trackEvent('lesson_access', {
+        'lesson_id': this.dataset.lesson,
+        'lesson_title': this.textContent
+      });
+    });
+  });
 </script>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX', {
+        'page_path': '{{ request.path }}',
+        'page_title': '{{ page_title|default("ToolsOra") }}'
+      });
+    </script>
 
   </body>
 </html>
